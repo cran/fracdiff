@@ -1,0 +1,3 @@
+fracdiff		ML-estimation for ARIMA (p,d,q) models
+fracdiff.var		Recompute covariance estimate for fracdiff
+fracdiff.sim		Simulation of ARIMA (p,d,q) models

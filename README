@@ -1,0 +1,33 @@
+fracdiff Maximum likelihood estimation of the parameters of a fractionally
+         differenced ARIMA (p,d,q) model. For long-memory dependence in 
+         time series. (Haslett and Raftery, Applied Statistics 38, 1989, 1-50).
+
+See the help files for details.
+
+This package has been converted from the original S/S-plus package by
+the Department of Statistics, Univeristy of Washington for usage with
+R; see README.orig for copyright and original author.
+
+I've converted all single precision floats to double precision (both
+in the R file and the Fortran sources), as R doesn't support single
+precision.
+
+The code seems to work fine for parameter estimation, but I have not
+figured out how to use the variance estimation. I always get
+covariance matrices with entries around 10^{+-20} or so. If you have 
+used the original version under S, could you send me a working
+example?
+
+
+=====================================================================
+                         Friedrich  Leisch                             
+ Institut für Statistik                      Tel: (+43 1) 58801 4541
+ Technische Universität Wien                 Fax: (+43 1)  504 14 98
+ Wiedner Hauptstraße 8-10/1071      Friedrich.Leisch@ci.tuwien.ac.at
+ A-1040 Wien, Austria             http://www.ci.tuwien.ac.at/~leisch
+      PGP public key http://www.ci.tuwien.ac.at/~leisch/pgp.key
+=====================================================================
+
+
+
+

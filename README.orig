@@ -1,0 +1,37 @@
+fracdiff Maximum likelihood estimation of the parameters of a fractionally
+         differenced ARIMA (p,d,q) model. For long-memory dependence in 
+         time series. (Haslett and Raftery, Applied Statistics 38, 1989, 1-50).
+
+This submission contains the following files :
+
+fracdiff.q          S-functions fracdiff, fracdiff.var, and fracdiff.sim
+                   (source("fracdiff.q"))
+fdcore.f            Fortran code that differs from the all-Fortran version
+fdhess.f            subroutines for computing Hessian and variance information
+fdmin.f             auxiliary subroutines from MINPACK
+fdgam.f             auxiliary subroutines for the gamma function
+Makefile            sample UNIX Makefile for loading into S-Plus
+fracdiff.help       help file for the S version (.Data/.Help/fracdiff)
+fracdiff.var.help   help file for variance estimation
+fracdiff.sim.help   help file for the S version (.Data/.Help/fracdiff.sim)
+
+This is the S-driven version of the Fortan program. Fortran files must be
+compiled and loaded into S. In addition to the S function "fracdiff", file 
+fracdiff.q includes two other S functions : "fracdiff.var" which allows users 
+to change the finite-difference interval for estimating varinaces , and 
+"fracdiff.sim" for generating test series.
+
+For dynamic loading you may need to use dyn.load2() with the size option
+rather than dyn.load(). Check the size of fracdiff.o to make sure you allow
+enough space. On some machines (e.g. Vax 3200 and 5200) you may need to use
+static rather than dynamic loading.
+
+If you have Splus (version 3.1 or later), this function is available under
+the name "arima.fracdiff".
+
+copyright 1991 Department of Statistics, Univeristy of Washington
+funded by ONR contracts N-00014-88-K-0265 and N-00014-91-J-1074
+
+Permission granted for unlimited distribution for non-commercial purposes.
+
+Please report all anomalies to fraley@stat.washington.edu.
