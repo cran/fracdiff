@@ -1,3 +1,41 @@
+2005-06-17  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* src/Makevars : drop the non-portable "-O3 -Wall" flags
+
+
+2005-06-17  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.1-2
+	* DESCRIPTION (Date): 2004-10-02 --- never released ---> now to CRAN
+
+	* tests/ex-Vinod.R: add the example that failed (memory error)
+
+2004-10-02  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/fracdiff.R (fracdiff): new integer work array passed to C.
+
+	* src/fdcore.c (fracdf_): etc: new  iw[] integer work array.
+
+	* README: explain the "cast" bug in pqopt_()'s call to lmder1_()...
+
+	* src/fracdiff.h: new for common declarations
+
+2004-09-18  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* src/fdcore.c: now translated from fortran
+	* src/fdgam.c:  using f2c, my "f2c-clean"
+	* src/fdhess.c: and lots of manual cleaning.
+	* src/fdmin.c:
+	* src/fdsim.c:
+
+2004-04-29  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/fracdiff.R (fracdiff): make 'lenw' compatible to check in
+	src/fdcore.f; {also make "info = 1" message more informative}
+
+	* src/fdcore.f (fracdf): in the case of too small workspace,
+	return the desired size to R.
+
 2004-01-12  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Version): 1.1-1

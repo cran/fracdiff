@@ -1,3 +1,5 @@
+####-*- mode: R; kept-old-versions: 12;  kept-new-versions: 20; -*-
+
 ### Original file:
 ### copyright 1991 Department of Statistics, Univeristy of Washington
 
@@ -35,19 +37,24 @@ fracdiff <- function(x, nar = 0, nma = 0,
     if(is.matrix(x) && ncol(x) > 2)
         stop("multivariate time series not allowed")
     n <- length(x)
-    npq <- nar + nma
-    npq1 <- npq + 1
-    lwork <- max(npq + 2 * (n + M),
-                 3 * n + (n + 6) * npq + npq %/% 2 + 1,
-                 (3 + 2 * npq1) * npq1 + 1)
+    if(round(nar) != nar || nar < 0 || round(nma) != nma || nma < 0)
+        stop("'nar' and 'nma' must be non-negative integers")
+    npq <- as.integer(nar + nma)
+    npq1 <- as.integer(npq + 1:1)
+    lenw <- max(npq + 2*(n + M),
+                3*n + (n+6)*npq + npq %/% 2 + 1,
+                31 * 12, ## << added because checked in ../src/fdcore.f
+                (3 + 2*npq1) * npq1 + 1)## << this is *not* checked (there)
+    lenw <- as.integer(lenw)
     ar[is.na(ar)] <- 0
     ma[is.na(ma)] <- 0
     if(is.null(dtol))
         dtol <- .Machine$double.eps^0.25 # ~ 1.22e-4
     ## if dtol < 0: the fortran code will choose defaults
+    x <- as.double(x)
     result <- .Fortran("fracdf",
-                       as.double(x),
-                       as.integer(n),
+                       x,
+                       n,
                        as.integer(M),
                        as.integer(nar),
                        as.integer(nma),
@@ -57,8 +64,9 @@ fracdiff <- function(x, nar = 0, nma = 0,
                        d = double(1),
                        ar = as.double(ar),
                        ma = as.double(ma),
-                       w = double(lwork),
-                       as.integer(lwork),
+                       w = double(lenw),
+                       lenw = lenw,
+                       iw = integer(npq),## <<< new int-work array
                        info = integer(1),
                        .Machine$double.xmin,
                        .Machine$double.xmax,
@@ -67,33 +75,32 @@ fracdiff <- function(x, nar = 0, nma = 0,
                        PACKAGE = "fracdiff")
     if(result$info)
         switch(result$info,
-               stop("insufficient workspace"),
+               stop("insufficient workspace; need ", result$lenw,
+                    " instead of just ", lenw),
                stop("error in gamma function"),
                stop("invalid MINPACK input"),
                warning("warning in gamma function"),
                warning("optimization failure"),
                warning("optimization limit reached"))
 
-    hess <- .Fortran("fdhpq",
-                     as.double(x),
-                     hess = double(npq1 * npq1),
-                     as.integer(npq1),
-                     result$w,
-                     PACKAGE = "fracdiff")$hess
+    hess <- .C("fdhpq",
+               x,
+               hess = double(npq1 * npq1),
+               npq1,
+               result$w,
+               PACKAGE = "fracdiff")$hess
 
-    temp <- .Fortran("fdcov",
-                     as.double(x),
-                     as.double(result$d),
-                     h = as.double(if(missing(h)) -1 else h),
-                     hd = double(npq1),
-                     cov = hess,
-                     as.integer(npq1),
-                     cor = hess,
-                     as.integer(npq1),
-                     se = double(npq1),
-                     result$w,
-                     info = integer(1),
-                     PACKAGE = "fracdiff")
+    temp <- .C("fdcov",
+               x,
+               result$d,
+               h = as.double(if(missing(h)) -1 else h),
+               hd = double(npq1),
+               cov = hess, npq1,
+               cor = hess, npq1,
+               se = double(npq1),
+               result$w,
+               info = integer(1),
+               PACKAGE = "fracdiff")
     if(temp$info)
         switch(temp$info,
                warning("warning in gamma function"),
@@ -113,10 +120,11 @@ fracdiff <- function(x, nar = 0, nma = 0,
     se.ok <- temp$info != 0 || temp$info < 3
     list(log.likelihood = result$hood,
          d = result$d, ar = result$ar, ma = result$ma,
-         covariance.dpq = array(temp$cov, c(npq1, npq1), list(nam, nam)),
-         stderror.dpq = if(se.ok) temp$se, # else NULL
-         correlation.dpq = if(se.ok) array(temp$cor, c(npq1, npq1)), # else NULL
-         h = temp$h, d.tol = result$dtol, M = M, hessian.dpq = hess)
+         covariance.dpq  = array(temp$cov, c(npq1, npq1), list(nam, nam)),
+         stderror.dpq    = if(se.ok) temp$se, # else NULL
+         correlation.dpq = if(se.ok) array(temp$cor, c(npq1, npq1)),
+         h = temp$h, d.tol = result$dtol, M = M, hessian.dpq = hess,
+         length.w = lenw)
 }
 
 fracdiff.var <- function(x, fracdiff.out, h)
@@ -134,33 +142,33 @@ fracdiff.var <- function(x, fracdiff.out, h)
                  3 * n + (n + 6) * npq + npq %/% 2 + 1,
                  (3 + 2 * npq1) * npq1 + 1)
     ## Initialize
-    .Fortran("fdcom",
-             n,
-             as.integer(M),
-             (p),
-             (q),
-             as.double(fracdiff.out$log.likelihood),
-             .Machine$double.xmin,
-             .Machine$double.xmax,
-             .Machine$double.neg.eps,
-             .Machine$double.eps,
-             PACKAGE = "fracdiff")
+    .C("fdcom",
+       n,
+       as.integer(M),
+       (p),
+       (q),
+       as.double(fracdiff.out$log.likelihood),
+       .Machine$double.xmin,
+       .Machine$double.xmax,
+       .Machine$double.neg.eps,
+       .Machine$double.eps,
+       PACKAGE = "fracdiff")
     ## Re compute Covariance Matrix:
-    temp <- .Fortran("fdcov",
-                     as.double(x),
-                     as.double(fracdiff.out$d),
-                     h = as.double(h),
-                     hd = double(npq1),
-                     cov = as.double(fracdiff.out$hessian.dpq),
-                     as.integer(npq1),
-                     cor = as.double(fracdiff.out$hessian.dpq),
-                     as.integer(npq1),
-                     se = double(npq1),
-                     as.double(c(fracdiff.out$ma,
-                                 fracdiff.out$ar,
-                                 rep(0, lwork))),
-                     info = integer(1),
-                     PACKAGE = "fracdiff")
+    temp <- .C("fdcov",
+               as.double(x),
+               as.double(fracdiff.out$d),
+               h = as.double(h),
+               hd = double(npq1),
+               cov = as.double(fracdiff.out$hessian.dpq),
+               as.integer(npq1),
+               cor = as.double(fracdiff.out$hessian.dpq),
+               as.integer(npq1),
+               se = double(npq1),
+               as.double(c(fracdiff.out$ma,
+                           fracdiff.out$ar,
+                           rep(0, lwork))),
+               info = integer(1),
+               PACKAGE = "fracdiff")
     if(temp$info)
         switch(temp$info,
                warning("warning in gamma function"),
@@ -185,20 +193,20 @@ fracdiff.sim <- function(n, ar, ma, d, mu = 0)
 {
     p <- length(ar)
     q <- length(ma)
-    temp <- .Fortran("fdsim",
-                     as.integer(n),
-                     (p),
-                     (q),
-                     as.double(ar),
-                     as.double(ma),
-                     as.double(d),
-                     as.double(mu),
-                     rnorm(n + q),
-                     x = double(n + q),
-                     .Machine$double.xmin,
-                     .Machine$double.xmax,
-                     .Machine$double.neg.eps,
-                     .Machine$double.eps,
-                     PACKAGE = "fracdiff")$x[1:n]
+    temp <- .C("fdsim",
+               as.integer(n),
+               (p),
+               (q),
+               as.double(ar),
+               as.double(ma),
+               as.double(d),
+               as.double(mu),
+               rnorm(n + q),
+               x = double(n + q),
+               .Machine$double.xmin,
+               .Machine$double.xmax,
+               .Machine$double.neg.eps,
+               .Machine$double.eps,
+               PACKAGE = "fracdiff")$x[1:n]
     list(series = temp, ar = ar, ma = ma, d = d, mu = mu)
 }

@@ -1,6 +1,6 @@
 
 R : Copyright 2004, The R Foundation for Statistical Computing
-Version 1.9.0 Under development (unstable) (2004-01-12), ISBN 3-900051-00-3
+Version 1.9.0 Patched (2004-04-29), ISBN 3-900051-00-3
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -66,6 +66,9 @@ $hessian.dpq
 d   -8251.6 -5875.1  4258.3
 ar1 -5875.1 -5420.1  4529.4
 ma1  4258.3  4529.4 -5833.6
+
+$length.w
+[1] 25014
 
 > 
 > fdCOVcomp <-
@@ -169,6 +172,9 @@ d   -8557.8 -3810.6  1742.3
 ar1 -3810.6 -2395.6  1507.3
 ma1  1742.3  1507.3 -5007.4
 
+$length.w
+[1] 10254
+
 > 
 > fd2. <- fracdiff.var(x2$series, fd2, h = fd2$h / 2)
 > sapply(fd2.[fdCOVcomp], signif, digits = 4)
@@ -227,5 +233,5 @@ ma1  1742  1507 -5007
 > 
 > ## Last Line:
 > cat('Time elapsed: ', proc.time() - .proctime00,'\n')
-Time elapsed:  0.8 0.01 0.81 0 0 
+Time elapsed:  0.47 0.01 0.48 0 0 
 > 

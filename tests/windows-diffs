@@ -1,0 +1,73 @@
+From: Uwe Ligges <ligges@statistik.uni-dortmund.de>
+To: Martin Maechler <maechler@stat.math.ethz.ch>
+Subject: Re: fracdiff package
+Date: Wed, 07 Jan 2004 15:24:17 +0100
+
+
+Martin Maechler wrote:
+
+>>>>>>"UweL" == Uwe Ligges <ligges@statistik.uni-dortmund.de>
+>>>>>>    on Wed, 07 Jan 2004 13:11:16 +0100 writes:
+>
+>
+>     UweL> Martin Maechler wrote:
+>
+>     ...
+>
+>     >> Ich hoffe, ich hätte dies E-mail bekommen auch ohne Rob
+>     >> Hyndman's "prompting" ?
+>
+>     UweL> Hallo Martin,
+>
+>     UweL> hmmm. Du muesstest eine automatisch generierte Mail bekommen haben mit
+>     UweL> dem Text (hier liegt noch das automatisch erzeugte file):
+>
+>     UweL> *************************
+>     UweL> Dear package maintainer,
+>
+>     UweL> this notification has been generated automatically.
+>     UweL> Your package fracdiff_1.1-0.tar.gz did not pass 'Rcmd check' on
+>     UweL> Windows and will be omitted from the corresponding CRAN directory
+>     UweL> (CRAN/bin/windows/contrib/1.8/).
+>     UweL> Please check the attached log-file and consider to resubmit a
+>     UweL> version that passes Rcmd check on Windows.
+>
+>     UweL> All the best,
+>     UweL> Uwe Ligges
+>     UweL> (Maintainer of binary packages for Windows)
+>     UweL> *************************
+>
+>
+> Ich bin ziemlich sicher, dies *nicht* bekommen zu haben.
+> Kannst Du versuchen, etwas mehr rauszufinden:
+> "Date", "From", "Subject" ?
+
+
+Hmm, geht. Vielleicht war gerade die Netzwerkverbindung down oder so.
+
+
+Es gab bei mir ein noch paar Ausgaben bei den tests beim Rcmd check,
+sind angehaengt.
+
+     ---> ./windows-fracdiff.log
+	  ----------------------
+Gruss,
+Uwe
+
+> ---------------
+>
+> Bevor ich eine neue Version "submitte", kannst Du mal schauen,
+> ob eine Datei fracdiff/src/Makevars mit
+> dem ein-zeiligen Inhalt
+> PKG_LIBS=$(BLAS_LIBS)
+> das Problem löst?
+>
+> Hier noch attached zu Deiner Bequemlichkeit:
+>
+>
+> ------------------------------------------------------------------------
+>
+>
+> Gruss: Martin
+
+
