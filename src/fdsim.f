@@ -1,7 +1,7 @@
       subroutine fdsim( n, ip, iq, ar, ma, d, rmu, y, s,
      *                  flmin, flmax, epmin, epmax)
 
-      implicit double precision (a-h,o-z)
+      implicit none
 
 c  generates a random time series for use with fracdf
 c
@@ -23,13 +23,13 @@ c  s      real   (n) the generated time series
 c-----------------------------------------------------------------------------
 c
 c        Simulates a series of length n from an ARIMA (p,d,q) model
-c        with fractional d (0 < d < 0.5). 
+c        with fractional d (0 < d < 0.5).
 c
 c-----------------------------------------------------------------------------
 
       integer            n, ip, iq
 c     real               ar(ip), ma(iq), rmu, d
-      double precision   ar(*), ma(*), rmu, d
+      double precision   ar(ip), ma(iq), rmu, d
 
       double precision   g0, vk, amk, sum, dk1, dk1d, dj, temp
 c     real               y(n+iq), s(n+iq)
@@ -51,8 +51,8 @@ c     real               y(n+iq), s(n+iq)
       common /GAMMFD/    IGAMMA, JGAMMA
       save   /GAMMFD/
 
-      real              zero, one, two
-      parameter        (zero = 0.0, one = 1.0, two = 2.0)
+      double precision zero, one, two
+      parameter        (zero = 0d0, one = 1d0, two = 2d0)
 
 *--------------------------------------------------------------------------
 
@@ -66,7 +66,7 @@ c     real               y(n+iq), s(n+iq)
 c
 c	 Calculate g0
 
-        temp = real(dgamr(dble(one-d)))
+        temp = dgamr(one-d)
         if (IGAMMA .ne. 0) then
           do i = 1, n
             s(i) = zero
@@ -74,7 +74,7 @@ c	 Calculate g0
           return
         end if
 
-        g0   = real(dgamma(dble(one-two*d)))*(temp*temp)
+        g0   = dgamma(one-two*d)*(temp*temp)
         if (IGAMMA .ne. 0) then
           do i = 1, n
             s(i) = zero
@@ -104,7 +104,7 @@ c
 c	 Update the phi(j) using the recursion formula on W498
 c
           do j = 1, k-2
-            dj   = dk1 - real(j) 
+            dj   = dk1 - real(j)
             s(j) = s(j)*(dk1*(dj-d)/(dk1d*dj))
           end do
 
@@ -128,12 +128,12 @@ c
 
 	end do
 c
-c	 We now have an ARIMA (0,d,0) realisation of length n+iq in 
+c	 We now have an ARIMA (0,d,0) realisation of length n+iq in
 c	 y(k),k=1,n+iq. We now run this through an inverse ARMA(p,q)
 c	 filter to get the final output in x(k),k=1,n.
 c
 
-	do k = 1, n 
+	do k = 1, n
 
 	  sum = zero
 

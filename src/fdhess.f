@@ -2,16 +2,16 @@
 *******************************************************************************
 *******************************************************************************
 
-      subroutine fdcom( n, M, nar, nma, hood, 
-     *                  flmin, flmax, epmin, epmax)
-
-      implicit double precision (a-h,o-z)
+      subroutine fdcom( n, M, nar, nma,
+     *                  hood, flmin, flmax, epmin, epmax)
 
       integer            n, M, nar, nma
       double precision   hood, flmin, flmax, epmin, epmax
 
       double precision   one
       parameter         (one=1.d0)
+
+      integer lfree, minpq
 
       double precision   FLTMIN, FLTMAX, EPSMIN, EPSMAX
       common /MACHFD/    FLTMIN, FLTMAX, EPSMIN, EPSMAX
@@ -35,15 +35,15 @@
 
       integer            lqp, la, lajac, ipvt, ldiag, lqtf,
      *                   lwa1, lwa2, lwa3, lwa4
-      common /WOPTFD/    lqp, la, lajac, ipvt, ldiag, lqtf, 
+      common /WOPTFD/    lqp, la, lajac, ipvt, ldiag, lqtf,
      *                   lwa1, lwa2, lwa3, lwa4
       save   /WOPTFD/
 
 c  copyright 1991 Department of Statistics, University of Washington
-c  written by Chris Fraley 
+c  written by Chris Fraley
 
 c-----------------------------------------------------------------------------
-  
+
       cllf = hood
 
       FLTMIN = flmin
@@ -95,8 +95,6 @@ c-----------------------------------------------------------------------------
 
       subroutine fdhpq( x, H, lH, w)
 
-      implicit double precision (a-h,o-z)
-
       integer            lH
 c     real               x(n)
       double precision   x(*)
@@ -117,16 +115,16 @@ c     double precision   H(lH, npq1)
 
       integer            lqp, la, lajac, ipvt, ldiag, lqtf,
      *                   lwa1, lwa2, lwa3, lwa4
-      common /WOPTFD/    lqp, la, lajac, ipvt, ldiag, lqtf, 
+      common /WOPTFD/    lqp, la, lajac, ipvt, ldiag, lqtf,
      *                   lwa1, lwa2, lwa3, lwa4
       save   /WOPTFD/
 
 c  copyright 1991 Department of Statistics, University of Washington
-c  written by Chris Fraley 
+c  written by Chris Fraley
 
 c-----------------------------------------------------------------------------
 
-      call hesspq( w(lqp), w(la), w(lajac), nm, H, lH, 
+      call hesspq( w(lqp), w(la), w(lajac), nm, H, lH,
      *             w(lwa4), w(lwa1))
 
 c     call dcopy( npq1, zero, 0, H(1,1), lH)
@@ -140,16 +138,14 @@ c     call dcopy( npq , zero, 0, H(2,1), 1)
 
       subroutine fdcov( x, d, hh, hd, cov, lcov, cor, lcor, se, w, info)
 
-      implicit double precision (a-h,o-z)
-
-      integer            lcov, info
+      integer            lcov, lcor, info
 c     real               x(n)
-      double precision   x(*)
-c     double precision   d, hh, hd(npq1), cov(lcov,npq1), 
+      double precision   x(*), d, hh, hd(*), cov(lcov,*), cor(lcor,*),
+     +      se(*), w(*)
+c     double precision   d, hh, hd(npq1), cov(lcov,npq1),
 c    *                   cor(lcor,npq1), se(npq1)
-      double precision   d, hh, hd(*), cov(lcov,*), cor(lcor,*), se(*)
-      double precision   w(*)
 
+      integer            i,j,k, le, ls,lu,lv, lfree, lwork
       double precision   temp
 
       double precision   zero, one, two
@@ -180,7 +176,7 @@ c    *                   cor(lcor,npq1), se(npq1)
       save   /HESSFD/
 
 c  copyright 1991 Department of Statistics, University of Washington
-c  written by Chris Fraley 
+c  written by Chris Fraley
 
 c-----------------------------------------------------------------------------
 
@@ -194,7 +190,7 @@ c-----------------------------------------------------------------------------
       KSVD = 0
       KCOV = 0
       KCOR = 0
-    
+
       info = 0
 
       temp = one
@@ -211,7 +207,7 @@ c-----------------------------------------------------------------------------
       lwork = le    + npq1
       lfree = lwork + npq1
 
-      call dsvdc( cov, lcov, npq1, npq1, w(ls), w(le), 
+      call dsvdc( cov, lcov, npq1, npq1, w(ls), w(le),
      *            w(lu), npq1, w(lv), npq1, w(lwork), 11, info)
 
       if (info .ne. 0) then
@@ -227,7 +223,7 @@ c-----------------------------------------------------------------------------
       call invsvd( w(ls), w(lu), npq1, w(lv), npq1, cov, lcov)
 
       do i = 1, npq1
-        do j = i+1, npq1 
+        do j = i+1, npq1
           cov(j,i) = cov(i,j)
         end do
       end do
@@ -280,13 +276,11 @@ c-----------------------------------------------------------------------------
 
       subroutine invsvd ( s, u, lu, v, lv, cov, lcov)
 
-      implicit double precision (a-h,o-z)
-
       integer            lu, lv, lcov
 c     double precision   s(npq1), u(lu,npq1), v(lv,npq1), cov(lcov,npq1)
       double precision   s(*), u(lu,*), v(lv,*), cov(lcov,*)
 
-      integer            krank
+      integer            i,j,k, krank
       double precision   ss
 
       double precision   zero, one
@@ -309,12 +303,12 @@ c     double precision   s(npq1), u(lu,npq1), v(lv,npq1), cov(lcov,npq1)
       save   /HESSFD/
 
 c copyright 1991 Department of Statistics, University of Washington
-c written by Chris Fraley 
+c written by Chris Fraley
 
 c-----------------------------------------------------------------------------
 
       krank = npq1
-     
+
       do i = 1, npq1
         ss = s(i)
         do j = 1, npq1
@@ -343,14 +337,14 @@ c            H(i,j) =  H(i,j) + s(k)*u(i,k)*v(j,k)
 c          end do
 c        end do
 c      end do
-      
+
 c      do k = 1, npq1
 c        ss = s(k)
 c        do j = 1, npq1
 c          call daxpy( j, ss*v(j,k), u(1,k), 1, H(1,j), 1)
 c        end do
 c      end do
-      
+
       do k = 1, krank
         ss = (-one/s(k))
         do j = 1, npq1
@@ -366,32 +360,32 @@ c      end do
 
       subroutine hesspq( qp, a, ajac, lajac, H, lH, aij, g)
 
-      implicit double precision (a-h,o-z)
-      integer           lajac, lH
-c     double precision  qp(npq), a(nm), ajac(nm,npq)
-      double precision  qp(*), a(*), ajac(lajac,*)
-c     double precision  H(lH,npq1), aij(nm), g(npq)
-      double precision  H(lH,*), aij(*), g(*)
+      integer		lajac, lH
+c     double precision	qp(npq), a(nm), ajac(nm,npq)
+      double precision	qp(*), a(*), ajac(lajac,*)
+c     double precision	H(lH,npq1), aij(nm), g(npq)
+      double precision	H(lH,*), aij(*), g(*)
 
 c analytic Hessian with respect to p and q variables
-     
-      double precision   ddot
 
-      integer           n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
-      common /DIMSFD/   n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
+      integer		i,j,k,km,l
+      double precision	ddot
+
+      integer		n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
+      common /DIMSFD/	n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       save   /DIMSFD/
 
-      double precision   hatmu, wnv, cllf
-      common /FILTFD/    hatmu, wnv, cllf
+      double precision	 hatmu, wnv, cllf
+      common /FILTFD/	 hatmu, wnv, cllf
       save   /FILTFD/
 
-      double precision  fac, s, t, u
+      double precision	fac, s, t, u
 
-      double precision  zero, one, two
-      parameter        (zero=0.d0, one=1.d0, two=2.d0)
+      double precision	zero, one, two
+      parameter	       (zero=0.d0, one=1.d0, two=2.d0)
 
 c copyright 1991 Department of Statistics, University of Washington
-c written by Chris Fraley 
+c written by Chris Fraley
 
 c-----------------------------------------------------------------------------
 
@@ -399,7 +393,7 @@ c-----------------------------------------------------------------------------
 
       if (nq .ne. 0 .and. np .ne. 0) then
         do k = 1, npq
-          g(k) = ddot( nm, a, 1, ajac( 1, k), 1) 
+          g(k) = ddot( nm, a, 1, ajac( 1, k), 1)
         end do
         do i = 1, np
           u = g(nq+i)
@@ -419,12 +413,12 @@ c-----------------------------------------------------------------------------
                 aij(km) =                   t
               end if
             end do
-            s = ddot( nm, ajac( 1, nq+i), 1, ajac( 1, j), 1) 
-            t = ddot( nm, a             , 1, aij        , 1) 
+            s = ddot( nm, ajac( 1, nq+i), 1, ajac( 1, j), 1)
+            t = ddot( nm, a             , 1, aij        , 1)
             H(i+1,np+j+1) = -dble(n)*((s + t) - two*fac*u)*fac
           end do
         end do
-      end if 
+      end if
 
       if (nq .ne. 0) then
         do i = 1, nq
@@ -440,16 +434,16 @@ c-----------------------------------------------------------------------------
               end do
  302          continue
               s  = zero
-              if (km .gt. i) s = s + ajac(km-i,j) 
+              if (km .gt. i) s = s + ajac(km-i,j)
               if (km .gt. j) s = s + ajac(km-j,i)
               aij(km) = s + t
             end do
-            s = ddot( nm, ajac( 1, i), 1, ajac( 1, j), 1) 
-            t = ddot( nm, a          , 1, aij        , 1) 
-            H(np+i+1,np+j+1) = -dble(n)*((s + t) - two*fac*u)*fac    
+            s = ddot( nm, ajac( 1, i), 1, ajac( 1, j), 1)
+            t = ddot( nm, a          , 1, aij        , 1)
+            H(np+i+1,np+j+1) = -dble(n)*((s + t) - two*fac*u)*fac
           end do
         end do
-      end if 
+      end if
 
       if (np .ne. 0) then
         do i = 1, np
@@ -468,13 +462,13 @@ c              end if
 c 303          continue
 c              aij(km) = t
 c            end do
-            s = ddot( nm, ajac( 1, nq+i), 1, ajac( 1, nq+j), 1) 
-c            t = ddot( nm, a             , 1, aij           , 1) 
+            s = ddot( nm, ajac( 1, nq+i), 1, ajac( 1, nq+j), 1)
+c            t = ddot( nm, a             , 1, aij           , 1)
 c            H(i+1,j+1) = -dble(n)*((s + t) - two*fac*u)*fac
             H(i+1,j+1) = -dble(n)*(s - two*fac*u)*fac
           end do
         end do
-      end if 
+      end if
 
       return
       end
@@ -484,50 +478,47 @@ c            H(i+1,j+1) = -dble(n)*((s + t) - two*fac*u)*fac
 
       subroutine hesdpq( x, d, hh, hd, w)
 
-      implicit double precision (a-h,o-z)
+      double precision	 x(*)
+c     real		 x(n)
+c     double precision	 d, hh, hd(npq1), w(*)
+      double precision	 d, hh, hd(*), w(*)
 
-c     real               x(n)
-      double precision   x(*)
+      double precision	 slogvk, fa,fb
 
-c     double precision   d, hh, hd(npq1), w(*)
-      double precision   d, hh, hd(*), w(*)
+      intrinsic		 log
+      double precision	 ddot
 
-      double precision   slogvk
-
-      intrinsic          log
-      double precision   ddot
-
-      double precision   hatmu, wnv, cllf
-      common /FILTFD/    hatmu, wnv, cllf
+      double precision	 hatmu, wnv, cllf
+      common /FILTFD/	 hatmu, wnv, cllf
       save   /FILTFD/
 
-      double precision   zero, half, one, two
-      parameter         (zero=0.d0, half=.5d0, one=1.d0, two=2.d0)
+      double precision	 zero, half, one, two
+      parameter		(zero=0.d0, half=.5d0, one=1.d0, two=2.d0)
 
-      integer            n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
-      common /DIMSFD/    n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
+      integer		 n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
+      common /DIMSFD/	 n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       save   /DIMSFD/
 
-      integer            ly, lamk, lak, lvk, lphi, lpi
-      common /WFILFD/    ly, lamk, lak, lvk, lphi, lpi
+      integer		 ly, lamk, lak, lvk, lphi, lpi
+      common /WFILFD/	 ly, lamk, lak, lvk, lphi, lpi
       save   /WFILFD/
 
-      integer            lqp, la, lajac, ipvt, ldiag, lqtf,
-     *                   lwa1, lwa2, lwa3, lwa4
-      common /WOPTFD/    lqp, la, lajac, ipvt, ldiag, lqtf,
-     *                   lwa1, lwa2, lwa3, lwa4
-      save   /WOPTFD/      
+      integer		 lqp, la, lajac, ipvt, ldiag, lqtf,
+     *			 lwa1, lwa2, lwa3, lwa4
+      common /WOPTFD/	 lqp, la, lajac, ipvt, ldiag, lqtf,
+     *			 lwa1, lwa2, lwa3, lwa4
+      save   /WOPTFD/
 
-      double precision   FLTMIN, FLTMAX, EPSMIN, EPSMAX
-      common /MACHFD/    FLTMIN, FLTMAX, EPSMIN, EPSMAX
+      double precision	 FLTMIN, FLTMAX, EPSMIN, EPSMAX
+      common /MACHFD/	 FLTMIN, FLTMAX, EPSMIN, EPSMAX
       save   /MACHFD/
 
-      double precision   EPSP25, EPSPT3, EPSPT5, EPSP75, BIGNUM
-      common /MAUXFD/    EPSP25, EPSPT3, EPSPT5, EPSP75, BIGNUM
+      double precision	 EPSP25, EPSPT3, EPSPT5, EPSP75, BIGNUM
+      common /MAUXFD/	 EPSP25, EPSPT3, EPSPT5, EPSP75, BIGNUM
       save   /MAUXFD/
 
 c copyright 1991 Department of Statistics, University of Washington
-c written by Chris Fraley 
+c written by Chris Fraley
 
 c-----------------------------------------------------------------------------
 
@@ -546,7 +537,7 @@ c-----------------------------------------------------------------------------
 
           call gradpq( w(lwa1), w(la), w(lajac), nm)
 
-          wnv = ddot( nm, w(la), 1, w(la), 1) 
+          wnv = ddot( nm, w(la), 1, w(la), 1)
 
           call dscal( npq, (one/wnv), w(lwa1), 1)
 
@@ -568,15 +559,15 @@ c-----------------------------------------------------------------------------
 
             call gradpq( w(lwa2), w(la), w(lajac), nm)
 
-            wnv = ddot( nm, w(la), 1, w(la), 1) 
+            wnv = ddot( nm, w(la), 1, w(la), 1)
 
             call dscal( npq, (one/wnv), w(lwa2), 1)
 
             wnv = wnv / dble(nm - 1)
-          else 
+          else
             wnv = ddot( nm, w(ly), 1, w(ly), 1) / dble(nm-1)
           end if
-           
+
           fb  = -(dble(n)*(2.8378d0+log(wnv))+slogvk) / two
 
           hd(1) = ((fa + fb) - two*cllf) / (hh*hh)
@@ -592,21 +583,21 @@ c-----------------------------------------------------------------------------
 
             call gradpq( w(lwa2), w(la), w(lajac), nm)
 
-            wnv = ddot( nm, w(la), 1, w(la), 1) 
+            wnv = ddot( nm, w(la), 1, w(la), 1)
 
             call dscal( npq, (one/wnv), w(lwa2), 1)
 
             wnv = wnv / dble(nm - 1)
-          else 
+          else
             wnv = ddot( nm, w(ly), 1, w(ly), 1) / dble(nm-1)
           end if
 
           fb  = -(dble(n)*(2.8378d0+log(wnv))+slogvk) / two
- 
+
           hd(1) = ((cllf + fb) -two*fa) / (two*hh*hh)
 
         endif
-            
+
       else
 
         call fdfilt( x, (d+hh), w(ly), slogvk,
@@ -618,7 +609,7 @@ c-----------------------------------------------------------------------------
 
           call gradpq( w(lwa1), w(la), w(lajac), nm)
 
-          wnv = ddot( nm, w(la), 1, w(la), 1) 
+          wnv = ddot( nm, w(la), 1, w(la), 1)
 
           call dscal( npq, (one/wnv), w(lwa1), 1)
 
@@ -638,7 +629,7 @@ c-----------------------------------------------------------------------------
 
           call gradpq( w(lwa1), w(la), w(lajac), nm)
 
-          wnv = ddot( nm, w(la), 1, w(la), 1) 
+          wnv = ddot( nm, w(la), 1, w(la), 1)
 
           call dscal( npq, (one/wnv), w(lwa1), 1)
 
@@ -649,7 +640,7 @@ c-----------------------------------------------------------------------------
         end if
 
         fb  = -(dble(n)*(2.8378d0+log(wnv))+slogvk) / two
- 
+
         hd(1) = ((cllf + fb) - two*fa) / (two*hh*hh)
 
       end if
@@ -669,44 +660,43 @@ c-----------------------------------------------------------------------------
 
       subroutine gradpq( g, a, ajac, ljac)
 
-      implicit double precision (a-h,o-z)
+      integer		 ljac
+c     double precision	 g(npq), a(nm), ajac(nm,npq)
+      double precision	 g(*), a(*), ajac(ljac,*)
 
-      integer            ljac
-c     double precision   g(npq), a(nm), ajac(nm,npq)
-      double precision   g(*), a(*), ajac(ljac,*)
+      integer		 i,j
+      double precision	 ddot
 
-      double precision   ddot
-
-      integer            n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
-      common /DIMSFD/    n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
+      integer		 n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
+      common /DIMSFD/	 n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       save   /DIMSFD/
 
-      integer            ly, lamk, lak, lvk, lphi, lpi
-      common /WFILFD/    ly, lamk, lak, lvk, lphi, lpi
+      integer		 ly, lamk, lak, lvk, lphi, lpi
+      common /WFILFD/	 ly, lamk, lak, lvk, lphi, lpi
       save   /WFILFD/
 
-      integer            lqp, la, lajac, ipvt, ldiag, lqtf,
-     *                   lwa1, lwa2, lwa3, lwa4
-      common /WOPTFD/    lqp, la, lajac, ipvt, ldiag, lqtf,
-     *                   lwa1, lwa2, lwa3, lwa4
+      integer		 lqp, la, lajac, ipvt, ldiag, lqtf,
+     *			 lwa1, lwa2, lwa3, lwa4
+      common /WOPTFD/	 lqp, la, lajac, ipvt, ldiag, lqtf,
+     *			 lwa1, lwa2, lwa3, lwa4
       save   /WOPTFD/
 
 c copyright 1991 Department of Statistics, University of Washington
-c written by Chris Fraley 
+c written by Chris Fraley
 
 c------------------------------------------------------------------------------
 
       if (np .ne. 0) then
         do i = 1, np
-          g(i)    = ddot( nm, a, 1, ajac( 1, nq+i), 1) 
+          g(i)    = ddot( nm, a, 1, ajac( 1, nq+i), 1)
         end do
       end if
 
       if ( nq .ne. 0) then
         do j = 1, nq
-          g(np+j) = ddot( nm, a, 1, ajac( 1,    j), 1) 
+          g(np+j) = ddot( nm, a, 1, ajac( 1,    j), 1)
         end do
-      end if 
+      end if
 
       return
       end

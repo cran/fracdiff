@@ -6,16 +6,14 @@
      *                   hood, d, ar, ma, w, lenw, inform,
      *                   flmin, flmax, epmin, epmax)
 
-      implicit double precision (a-h,o-z)
-
-      integer            n, M, nar, nma, lenw
+      integer            n, M, nar, nma, lenw, inform
 c     real               x(n)
-      double precision   x(*)
+      double precision   x(n)
       double precision   d, dtol, hood
-c     double precision   ar(nar), ma(nma), drange(2)
-      double precision   ar(*), ma(*), drange(2)
-c     double precision   w(lenw)
-      double precision   w(*)
+      double precision   ar(nar), ma(nma), drange(2)
+c     double precision   ar(*), ma(*), drange(2)
+      double precision   w(lenw)
+c     double precision   w(*)
       double precision   flmin, flmax, epmin, epmax
 
 c------------------------------------------------------------------------------
@@ -36,20 +34,21 @@ c  drange  double   array of length 2 giving minimum and maximum values f
 c                   for the fractional differencing parameter
 c  d       double   initial guess for optimal fractional differencing parameter
 c  w       double   work array
-c  lenw    integer  length of double precision workspace w, must be at least 
+c  lenw    integer  length of double precision workspace w, must be at least
 c  max( p+q+2*(n+M), 3*n+(n+6.5)*(p+q)+1,(3+2*(p+q+1))*(p+q+1)+1)
 c
 c  Output :
-c 
+c
 c  dtol    double   value of dtol ultimately used by the algorithm
 c  d       double   final value optimal fractional differencing parameter
 c  hood    double   logarithm of the maximum likelihood
-c  ar      double   optimal autoregressive parameters       
-c  ma      double   optimal moving average parameters       
+c  ar      double   optimal autoregressive parameters
+c  ma      double   optimal moving average parameters
 c
 c------------------------------------------------------------------------------
 
-      double precision   dopt
+      integer ilim, lfree, minpq
+      double precision   dopt, delta
 
       double precision   FLTMIN, FLTMAX, EPSMIN, EPSMAX
       common /MACHFD/    FLTMIN, FLTMAX, EPSMIN, EPSMAX
@@ -65,7 +64,7 @@ c------------------------------------------------------------------------------
 
       integer            maxopt,maxfun,nopt,nfun,ngrd,ifun,igrd,info
       common /CNTRFD/    maxopt,maxfun,nopt,nfun,ngrd,ifun,igrd,info
-      save   /CNTRFD/    
+      save   /CNTRFD/
 
       double precision   told, tolf, tolx, tolg, anorm, deltax, gnorm
       common /TOLSFD/    told, tolf, tolx, tolg, anorm, deltax, gnorm
@@ -81,7 +80,7 @@ c------------------------------------------------------------------------------
 
       integer            lqp, la, lajac, ipvt, ldiag, lqtf,
      *                   lwa1, lwa2, lwa3, lwa4
-      common /WOPTFD/    lqp, la, lajac, ipvt, ldiag, lqtf, 
+      common /WOPTFD/    lqp, la, lajac, ipvt, ldiag, lqtf,
      *                   lwa1, lwa2, lwa3, lwa4
       save   /WOPTFD/
 
@@ -105,7 +104,7 @@ c------------------------------------------------------------------------------
       parameter         (zero=0.d0, one=1.d0)
 
 c  copyright 1991 Department of Statistics, University of Washington
-c  written by Chris Fraley 
+c  written by Chris Fraley
 
 c-----------------------------------------------------------------------------
 
@@ -168,7 +167,7 @@ c useful quantities
       dtol   = told
 
       nm     = n - maxpq
- 
+
 c workspace allocation
 
       lqp    = 1
@@ -228,7 +227,7 @@ c     end if
         if (IMINPK .ne. 0) inform = 3
         return
       end if
-     
+
       call dcopy( np, w(lqp+nq), 1, ar, 1)
       call dcopy( nq, w(lqp   ), 1, ma, 1)
 
@@ -237,7 +236,7 @@ c     end if
       if (JLIMIT .ne. 0) inform = 6
 
       return
-c 900  format( 4h itr, 14h     d          ,   14h    est mean  , 
+c 900  format( 4h itr, 14h     d          ,   14h    est mean  ,
 c     *                16h     white noise,  17h     log likelihd,
 c     *                 4h  nf, 3h ng)
       end
@@ -247,8 +246,6 @@ c     *                 4h  nf, 3h ng)
 
       double precision function dopt( x, dinit, drange, hood, delta, w)
 
-      implicit double precision (a-h,o-z)
-
 c     real              x(n)
       double precision  x(*)
       double precision  dinit, drange(2), hood, delta
@@ -257,24 +254,24 @@ c
 c optimization with repsect to d based on Brent's fmin algorithm
 c
       double precision  pqopt
-      double precision  dd, ee, hh, rr, ss, tt
+      double precision  d, dd, ee, hh, rr, ss, tt
       double precision  uu, vv, ww, fu, fv, fw
-      double precision  eps, tol1, tol2, tol3
+      double precision  eps, tol, tol1, tol2, tol3
 
       intrinsic         abs, sqrt
 
       double precision  cc
-      
+
       double precision  zero, half, one, two, three
       parameter        (zero=0.d0, half=.5d0, one=1.d0,
      *                   two=2.d0, three=3.d0)
 
-      integer           maxopt, maxfun, nopt, nfun, ngrd, 
+      integer           maxopt, maxfun, nopt, nfun, ngrd,
      *                  ifun, igrd, info
-      common /CNTRFD/   maxopt, maxfun, nopt, nfun, ngrd, 
+      common /CNTRFD/   maxopt, maxfun, nopt, nfun, ngrd,
      *                  ifun, igrd, info
       save   /CNTRFD/
-        
+
       integer            n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       common /DIMSFD/    n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       save   /DIMSFD/
@@ -313,7 +310,7 @@ c
       save   /MNPKFD/
 
 c  copyright 1991 Department of Statistics, University of Washington
-c  written by Chris Fraley 
+c  written by Chris Fraley
 
 c------------------------------------------------------------------------------
 c
@@ -324,7 +321,11 @@ c
 c  eps is approximately the square root of the relative machine
 c  precision.
 c
-      data              cc /.38196601125011d0/
+      data cc /.38196601125011d0/
+
+c -Wall:
+      dopt = -1d0
+      dd = 0d0
 
       eps  =  EPSMAX
       tol1 =  one + eps
@@ -345,10 +346,10 @@ c
       nopt = 1
 
       fx   =  pqopt( x, xx, w)
-      
+
       fv   =  fx
       fw   =  fx
- 
+
       tol  = max(dtol,zero)
       tol3 = tol/three
 c
@@ -390,26 +391,26 @@ c
         ss   =  two*(ss-rr)
         if (ss .le. zero) then
           ss = -ss
-        else             
+        else
           tt = -tt
         end if
         rr   =  ee
         ee   =  dd
       end if
-     
-      if ((abs(tt) .ge. abs(half*ss*rr)) .or. 
+
+      if ((abs(tt) .ge. abs(half*ss*rr)) .or.
      *   (tt .le. ss*(aa-xx)) .or. (tt .ge. ss*(bb-xx))) then
 c
 c  a golden-section step
 c
         if (xx .ge. hh) then
           ee = aa - xx
-        else           
+        else
           ee = bb - xx
         end if
         dd   =  cc*ee
 
-      else 
+      else
 c
 c  a parabolic-interpolation step
 c
@@ -431,10 +432,10 @@ c
       else
         if (dd .le. zero) then
           uu = xx - tol1
-        else             
+        else
           uu = xx + tol1
         end if
-      end if 
+      end if
 
       nopt = nopt + 1
 
@@ -446,7 +447,7 @@ c
         if (uu .ge. xx) then
           aa = xx
           fa = fx
-        else           
+        else
           bb = xx
           fb = fx
         end if
@@ -476,7 +477,7 @@ c
           fw   =  fu
         end if
       end if
-      
+
       go to 10
 c
 c  end of main loop
@@ -484,7 +485,7 @@ c
   100 dopt =  xx
       hood = -fx
       cllf =  hood
-      
+
       return
 c 900  format( i4, 2(1pe14.6), 1pe16.7, 1pe17.8, 1x, 2(i3))
 c 901  format( i4, 3(1pe10.2), 1pe11.2, 2(i3), 3(1pe8.1), i2)
@@ -494,8 +495,6 @@ c 901  format( i4, 3(1pe10.2), 1pe11.2, 2(i3), 3(1pe8.1), i2)
 ***************************************************************************
 
       double precision function pqopt( x, d, w)
-
-      implicit double precision (a-h,o-z)
 
 c     real              x(n)
       double precision  x(*)
@@ -516,26 +515,26 @@ c     real              x(n)
 
       double precision  hatmu, wnv, hood
       common /FILTFD/   hatmu, wnv, hood
-      save   /FILTFD/   
+      save   /FILTFD/
 
       double precision dtol, ftol, xtol, gtol, anorm, deltax, gnorm
       common /TOLSFD/  dtol, ftol, xtol, gtol, anorm, deltax, gnorm
-      save   /TOLSFD/  
+      save   /TOLSFD/
 
       integer          n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       common /DIMSFD/  n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
-      save   /DIMSFD/ 
+      save   /DIMSFD/
 
-      integer          maxopt, maxfun, nopt, nfun, ngrd, 
+      integer          maxopt, maxfun, nopt, nfun, ngrd,
      *                 ifun, igrd, info
-      common /CNTRFD/  maxopt, maxfun, nopt, nfun, ngrd, 
+      common /CNTRFD/  maxopt, maxfun, nopt, nfun, ngrd,
      *                 ifun, igrd, info
       save   /CNTRFD/
 
       integer           ly, lamk, lak, lvk, lphi, lpi
       common /WFILFD/   ly, lamk, lak, lvk, lphi, lpi
       save   /WFILFD/
-     
+
       integer           lqp, la, lajac, ipvt, ldiag, lqtf,
      *                  lwa1, lwa2, lwa3, lwa4
       common /WOPTFD/   lqp, la, lajac, ipvt, ldiag, lqtf,
@@ -560,11 +559,11 @@ c     real              x(n)
       data              modelm/1/, factlm /100.d0/
 
 c copyright 1991 Department of Statistics, University of Washington
-c written by Chris Fraley 
+c written by Chris Fraley
 
 c----------------------------------------------------------------------------
 
-        call fdfilt( x, d, w(ly), slogvk, 
+        call fdfilt( x, d, w(ly), slogvk,
      *               w(lamk), w(lak), w(lvk), w(lphi), w(lpi))
 
         if (IGAMMA .ne. 0) then
@@ -572,7 +571,7 @@ c----------------------------------------------------------------------------
           wnv    =  FLTMAX
           hood   = -FLTMAX
           return
-        end if 
+        end if
 
         t = dble(n)
 
@@ -638,7 +637,7 @@ c         write( 6, *) 'MINPACK : gtol is too small'
         end if
 
 c        call daxpy( npq, (-one), w(lpq), 1, w(lqp), 1
-c        delpq  = sqrt(ddot( npq, w(lqp), 1, w(lqp), 1))         
+c        delpq  = sqrt(ddot( npq, w(lqp), 1, w(lqp), 1))
 c        pqnorm = sqrt(ddot( npq, w(lpq), 1, w(lpq), 1))
 
         wnv   =  (anorm*anorm) / dble(nm-1)
@@ -654,8 +653,6 @@ c        pqnorm = sqrt(ddot( npq, w(lpq), 1, w(lpq), 1))
 ***************************************************************************
 
       subroutine fdfilt( x, d, y, slogvk, amk, ak, vk, phi, pi)
-
-      implicit double precision (a-h,o-z)
 
 c     real              x(n)
       double precision  x(*)
@@ -679,7 +676,7 @@ c          can be arranged so that phi, pi and vk share the same storage
 c**************************************************************************
 
       integer           j, k, km, mcap, mcap1
-      double precision  g0, r, s, t, u, v, z
+      double precision  g0, r, s, t, u, v, z, sumlog
 
       double precision  zero, one, two
       parameter        (zero=0.d0, one=1.d0, two=2.d0)
@@ -694,24 +691,24 @@ c**************************************************************************
 
       integer           n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       common /DIMSFD/   n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
-      save   /DIMSFD/ 
+      save   /DIMSFD/
 
       integer            IGAMMA, JGAMMA
       common /GAMMFD/    IGAMMA, JGAMMA
       save   /GAMMFD/
 
 c copyright 1991 Department of Statistics, University of Washington
-c written by Chris Fraley 
-        
+c written by Chris Fraley
+
 c-----------------------------------------------------------------------
 
-	mcap  = min(M,n) 
+	mcap  = min(M,n)
         mcap1 = mcap + 1
 c
 c calculate amk(k), vk(k), and ak(k) for k=1,n (see W522-4 for notation).
 c
 c
-c  k = 1 
+c  k = 1
 c
 	amk(1) = zero
 	ak(1)  = one
@@ -728,7 +725,7 @@ c
 
   	g0 = dgamma(one-(two*d))*(t*t)
         if (IGAMMA .ne. 0) return
- 
+
 	vk(1)  = g0
 	vk(2)  = g0*(one-(z*z))
 c
@@ -738,7 +735,7 @@ c
           km = k - 1
           t  = dble(km)
           u  = t - d
-c 
+c
 c  calculate phi() and vk() using the recursion formula on W498
 c
 	  do j = 1, km-1
@@ -762,11 +759,11 @@ c
           amk(k) = u
           ak(k)  = v
         end do
-	
+
         if (mcap .eq. n) go to 200
 c
 c  k = mcap+1, n
-c	
+c
 c calculate pi(j), j = 1,mcap
 c
 	pi(1) = d
@@ -792,7 +789,7 @@ c
           if (r .eq. zero) then
             amk(k) = z
        	    ak(k)  = s
-          else 
+          else
             v      = (t*(one - (u/dble(k))**d))/d
 	    amk(k) = z + ((v*r)/(dble(km)-one))
             ak(k)  = s - v
@@ -823,7 +820,7 @@ c
 c
 c  form filtered version
 c
-        s = zero   
+        s = zero
 	do k= 1, mcap
 	  s = s + log(vk(k))
         end do
@@ -856,19 +853,18 @@ c
 
       subroutine ajqp( qp, a, ajac, lajac, iflag, y)
 
-      implicit double precision (a-h,o-z)
-
       integer          lajac, iflag
-
 c     double precision qp(npq), a(nm), ajac(nm,npq), y(n)
       double precision qp(*), a(*), ajac(lajac,*), y(*)
+
+      integer          i,k,km,l
 
       integer          maxopt, maxfun, nopt, nfun, ngrd,
      *                 ifun, igrd, info
       common /CNTRFD/  maxopt, maxfun, nopt, nfun, ngrd,
      *                 ifun, igrd, info
       save   /CNTRFD/
-     
+
       integer          n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       common /DIMSFD/  n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       save   /DIMSFD/
@@ -879,11 +875,11 @@ c     double precision qp(npq), a(nm), ajac(nm,npq), y(n)
 
       double precision s, t
 
-      double precision zero
-      parameter       (zero=0.d0)
+      double precision   zero, one
+      parameter         (zero=0.d0, one=1.d0)
 
 c copyright 1991 Department of Statistics, University of Washington
-c written by Chris Fraley 
+c written by Chris Fraley
 
 c--------------------------------------------------------------------------
 
@@ -911,7 +907,7 @@ c
  101      s = y(k) + (t + s)
           if (abs(s) .le. BIGNUM) then
             a(km) = s
-          else                    
+          else
             a(km) = sign(one,s)*BIGNUM
           end if
         end do
@@ -946,7 +942,7 @@ c
             end if
             if (abs(s) .le. BIGNUM) then
               ajac(km,i) = s
-            else                    
+            else
               ajac(km,i) = sign(one,s)*BIGNUM
             end if
           end do
@@ -962,23 +958,22 @@ c
 
       subroutine  ajp( p, a, ajac, lajac, iflag, y)
 
-      implicit double precision (a-h,o-z)
-
       integer          lajac, iflag
 c     double precision p(np), a(nm), ajac(nm,npq), y(n)
       double precision p(*), a(*), ajac(lajac,*), y(*)
-     
+
       integer          n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       common /DIMSFD/  n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       save   /DIMSFD/
 
+      integer i,k,l
       double precision  t
 
       double precision zero
       parameter       (zero=0.d0)
 
 c copyright 1991 Department of Statistics, University of Washington
-c written by Chris Fraley 
+c written by Chris Fraley
 
 c--------------------------------------------------------------------------
 
@@ -1006,7 +1001,7 @@ c  jacobian calculation
 c
           do i = 1, np
             do k = np+1, n
-              ajac(k-np,i) = -y(k-i) 
+              ajac(k-np,i) = -y(k-i)
             end do
           end do
 
@@ -1018,19 +1013,19 @@ c
 
       subroutine  ajq( qp, a, ajac, lajac, iflag, y)
 
-      implicit double precision (a-h,o-z)
-
       integer          lajac, iflag
 c     double precision qp(npq), a(nm), ajac(nm,npq), y(n)
       double precision qp(*), a(*), ajac(lajac,*), y(*)
-     
+
+      integer  i,k,km,l
+
       integer          n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       common /DIMSFD/  n, M, np, nq, npq, npq1, maxpq, maxpq1, nm
       save   /DIMSFD/
 
-      integer          maxopt, maxfun, nopt, nfun, ngrd, 
+      integer          maxopt, maxfun, nopt, nfun, ngrd,
      *                 ifun, igrd, info
-      common /CNTRFD/  maxopt, maxfun, nopt, nfun, ngrd, 
+      common /CNTRFD/  maxopt, maxfun, nopt, nfun, ngrd,
      *                 ifun, igrd, info
       save   /CNTRFD/
 
@@ -1040,7 +1035,7 @@ c     double precision qp(npq), a(nm), ajac(nm,npq), y(n)
       parameter       (zero=0.d0)
 
 c copyright 1991 Department of Statistics, University of Washington
-c written by Chris Fraley 
+c written by Chris Fraley
 
 c--------------------------------------------------------------------------
 

@@ -1,0 +1,16 @@
+2003-12-29  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* tests/ex.R: new - first regression tests
+
+	* R/fracdiff.R (fracdiff): found *the* bug!! : use result$w !
+
+	* src/fdmin.f:  declared all; checked with "implicit none"
+	* src/fdhess.f: <ditto>
+	* src/fdcore.f: <ditto>
+
+	* src/fdgam.f (d9lgmc): fixed typo: s/d9gmlc/d9lgmc/
+	                        checked all with "implicit none"
+
+	* DESCRIPTION (Maintainer): Martin Maechler (was ORPHANED)
+	* DESCRIPTION (License): GPL
+

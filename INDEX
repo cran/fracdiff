@@ -1,5 +1,3 @@
-fracdiff                fracdiff: Maximum likelihood parameter
-                        estimates for
-fracdiff.sim            fracdiff.sim: test problem generator for
-                        fracdiff
+fracdiff                ML Estimates for Fractionally-Differenced ARIMA(p,d,q) models
+fracdiff.sim		Simulate fractional ARIMA Time Series
 fracdiff.var            Recompute Covariance Estimate for fracdiff

@@ -1,6 +1,7 @@
       subroutine lmder1(fcn,m,n,x,fvec,fjac,ldfjac,ftol,xtol,gtol,
      *                  maxfev,diag,mode,factor,info,nfev,njev,
      *                  ipvt,qtf,wa1,wa2,wa3,wa4,Y)
+
       integer m,n,ldfjac,maxfev,mode,nprint,info,nfev,njev
       integer ipvt(n)
       double precision ftol,xtol,gtol,factor
@@ -209,6 +210,7 @@ c
       data one,p1,p5,p25,p75,p0001,zero
      *     /1.0d0,1.0d-1,5.0d-1,2.5d-1,7.5d-1,1.0d-4,0.0d0/
 
+      temp = 0d0
       nprint = 0
       info = 0
       iflag = 0
@@ -372,7 +374,7 @@ c           compute the scaled actual reduction.
 c
            actred = -one
            if (p1*fnorm1 .lt. fnorm) actred = one - (fnorm1/fnorm)**2
-C          actred = (fnorm*fnorm - fnorm1*fnorm1) 
+C          actred = (fnorm*fnorm - fnorm1*fnorm1)
 c
 c           compute the scaled predicted reduction and
 c           the scaled directional derivative.
@@ -390,7 +392,7 @@ c
             prered = temp1**2 + temp2**2/p5
 C           temp1  = enorm(n,wa3)
 C           temp2  = (dsqrt(par)*pnorm)
-C           prered = (temp1**2 + 2.d0*temp2**2) 
+C           prered = (temp1**2 + 2.d0*temp2**2)
             dirder = -(temp1**2 + temp2**2)
 c
 c           compute the ratio of the actual to the predicted
@@ -468,13 +470,13 @@ c
       if (iflag .lt. 0) info = iflag
       iflag = 0
       if (nprint .gt. 0) call fcn(x,fvec,fjac,ldfjac,iflag,Y)
+
       return
-c
-c     last card of subroutine lmder.
-c
       end
+c     	subroutine lmder1
 
       double precision function enorm(n,x)
+
       integer n
       double precision x(n)
 c     **********
@@ -517,7 +519,9 @@ c     **********
       integer i
       double precision agiant,floatn,one,rdwarf,rgiant,s1,s2,s3,xabs,
      *                 x1max,x3max,zero
-      data one,zero,rdwarf,rgiant /1.0d0,0.0d0,3.834d-20,1.304d19/
+      data one,zero,rdwarf,rgiant /1d0, 0d0, 3.834d-20, 1.304d19/
+
+      enorm = -1d0
       s1 = zero
       s2 = zero
       s3 = zero
@@ -577,12 +581,13 @@ c
             enorm = x3max*dsqrt(s3)
   120    continue
   130 continue
+
       return
-c
-c     last card of function enorm.
-c
       end
+c	function enorm
+
       subroutine qrfac(m,n,a,lda,pivot,ipvt,lipvt,rdiag,acnorm,wa)
+
       integer m,n,lda,lipvt
       integer ipvt(lipvt)
       logical pivot
@@ -746,13 +751,14 @@ c
   100    continue
          rdiag(j) = -ajnorm
   110    continue
+
       return
-c
-c     last card of subroutine qrfac.
-c
       end
+c	subroutine qrfac
+
       subroutine lmpar(n,r,ldr,ipvt,diag,qtb,delta,par,x,sdiag,wa1,
      *                 wa2)
+
       integer n,ldr
       integer ipvt(n)
       double precision delta,par
@@ -1017,11 +1023,12 @@ c     termination.
 c
       if (iter .eq. 0) par = zero
       return
-c
-c     last card of subroutine lmpar.
-c
       end
+c	subroutine lmpar.
+
+
       subroutine qrsolv(n,r,ldr,ipvt,diag,qtb,x,sdiag,wa)
+
       integer n,ldr
       integer ipvt(n)
       double precision r(ldr,n),diag(n),qtb(n),x(n),sdiag(n),wa(n)
@@ -1210,7 +1217,5 @@ c
          x(l) = wa(j)
   160    continue
       return
-c
-c     last card of subroutine qrsolv.
-c
       end
+c     	subroutine qrsolv.
