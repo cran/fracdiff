@@ -1,4 +1,21 @@
+2004-01-12  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.1-1
+
+	* tests/ex.R: changed version; less precision - portable?
+	* tests/ex.Rout.save:
+
+2004-01-07  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* man/fracdiff.Rd: explain `h' argument and its default;
+	    now list all components in \value{};  also 'dtol':
+	* R/fracdiff.R: dtol < 0 now does work as the docs have always said.
+
+	* src/Makevars (PKG_LIBS): new;  use BLAS_LIBS.
+
 2003-12-29  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.1-0 -> released to CRAN
 
 	* tests/ex.R: new - first regression tests
 

@@ -155,15 +155,13 @@ c useful quantities
       if ( dtol .le. zero) then
         told  =  EPSP25
         tolf  =  EPSPT3
-        tolx  =  told
-        tolg  =  EPSPT3
       else
         told  =  max( dtol, EPSPT5)
-        tolf  =  max( dtol/1.d1, EPSP75)
-        tolx  =  told
-        tolg  =  max( dtol/1.d1, EPSP75)
+        tolf  =  max( dtol/10d0, EPSP75)
       end if
 
+      tolg   = tolf
+      tolx   = told
       dtol   = told
 
       nm     = n - maxpq
@@ -240,19 +238,20 @@ c 900  format( 4h itr, 14h     d          ,   14h    est mean  ,
 c     *                16h     white noise,  17h     log likelihd,
 c     *                 4h  nf, 3h ng)
       end
+c     fracdf() {main}
 
 *******************************************************************************
 *******************************************************************************
-
+c
+c optimization with respect to d based on Brent's fmin algorithm
+c
       double precision function dopt( x, dinit, drange, hood, delta, w)
 
 c     real              x(n)
       double precision  x(*)
       double precision  dinit, drange(2), hood, delta
       double precision  w(*)
-c
-c optimization with repsect to d based on Brent's fmin algorithm
-c
+
       double precision  pqopt
       double precision  d, dd, ee, hh, rr, ss, tt
       double precision  uu, vv, ww, fu, fv, fw
@@ -317,19 +316,17 @@ c
 c  cc is the squared inverse of the golden ratio (see data statement)
 c
 c     cc = half*(three-sqrt(5.0d0))
+      data cc /.38196601125011d0/
 c
 c  eps is approximately the square root of the relative machine
 c  precision.
 c
-      data cc /.38196601125011d0/
-
-c -Wall:
-      dopt = -1d0
-      dd = 0d0
-
       eps  =  EPSMAX
       tol1 =  one + eps
       eps  =  sqrt(eps)
+c -Wall:
+      dopt = -1d0
+      dd = 0d0
 c
       aa   =  drange(1)
       bb   =  drange(2)
@@ -399,7 +396,7 @@ c
       end if
 
       if ((abs(tt) .ge. abs(half*ss*rr)) .or.
-     *   (tt .le. ss*(aa-xx)) .or. (tt .ge. ss*(bb-xx))) then
+     *    (tt .le. ss*(aa-xx)) .or. (tt .ge. ss*(bb-xx))) then
 c
 c  a golden-section step
 c
@@ -490,6 +487,7 @@ c
 c 900  format( i4, 2(1pe14.6), 1pe16.7, 1pe17.8, 1x, 2(i3))
 c 901  format( i4, 3(1pe10.2), 1pe11.2, 2(i3), 3(1pe8.1), i2)
       end
+c     dopt()
 
 ***************************************************************************
 ***************************************************************************
@@ -508,6 +506,7 @@ c     real              x(n)
       intrinsic        log
 
       double precision  ddot
+c     These are passed to LMDER1() to be optimized:
       external          ajp, ajq, ajqp
 
       double precision zero, one
@@ -648,6 +647,7 @@ c        pqnorm = sqrt(ddot( npq, w(lpq), 1, w(lpq), 1))
 
       return
       end
+c     pqopt()
 
 ***************************************************************************
 ***************************************************************************
@@ -667,7 +667,7 @@ c input  :
 c          x       real    original time series
 c          d       double  estimated value of d
 c output :
-c          y       double  flitered series
+c          y       double  filtered series
 c          slogvk  double  the sum of the logarithms of the vk
 c notes  :
 c          y can use the same storage as either ak or amk
@@ -847,6 +847,7 @@ c
 
       return
       end
+c     fdfilt()
 
 *****************************************************************************
 *****************************************************************************

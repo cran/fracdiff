@@ -2,16 +2,14 @@
 *******************************************************************************
 *******************************************************************************
 
-      subroutine fdcom( n, M, nar, nma,
-     *                  hood, flmin, flmax, epmin, epmax)
+c Fill "parameter"s into global variables (Common blocks) called later:
+
+      subroutine fdcom( n, M, nar, nma, hood, flmin,flmax, epmin,epmax)
 
       integer            n, M, nar, nma
       double precision   hood, flmin, flmax, epmin, epmax
 
-      double precision   one
-      parameter         (one=1.d0)
-
-      integer lfree, minpq
+      integer minpq
 
       double precision   FLTMIN, FLTMAX, EPSMIN, EPSMAX
       common /MACHFD/    FLTMIN, FLTMAX, EPSMIN, EPSMAX
@@ -54,7 +52,7 @@ c-----------------------------------------------------------------------------
       EPSP25 = sqrt(EPSPT5)
       EPSPT3 = EPSMIN**(.3)
       EPSP75 = EPSMIN**(.75)
-      BIGNUM = one / EPSMIN
+      BIGNUM = 1d0 / EPSMIN
 
       nn    = n
       MM    = M
@@ -85,7 +83,7 @@ c-----------------------------------------------------------------------------
       lwa2   = lwa1   +  npq
       lwa3   = lwa2   +  npq
       lwa4   = lwa3   +  npq
-      lfree  = lwa4   +  n - minpq
+c      lfree  = lwa4   +  n - minpq
 
       return
       end
@@ -145,7 +143,7 @@ c     real               x(n)
 c     double precision   d, hh, hd(npq1), cov(lcov,npq1),
 c    *                   cor(lcor,npq1), se(npq1)
 
-      integer            i,j,k, le, ls,lu,lv, lfree, lwork
+      integer            i,j,k, le, ls,lu,lv, lwork
       double precision   temp
 
       double precision   zero, one, two
@@ -205,7 +203,7 @@ c-----------------------------------------------------------------------------
       lv    = lu    + npq1*npq1
       le    = lv    + npq1*npq1
       lwork = le    + npq1
-      lfree = lwork + npq1
+c      lfree = lwork + npq1
 
       call dsvdc( cov, lcov, npq1, npq1, w(ls), w(le),
      *            w(lu), npq1, w(lv), npq1, w(lwork), 11, info)
