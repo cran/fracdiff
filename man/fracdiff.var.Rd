@@ -1,4 +1,5 @@
 \name{fracdiff.var}
+\alias{fracdiff.var}
 \title{Recompute Covariance Estimate for fracdiff}
 \usage{
 fracdiff.var(x, fracdiff.out, h)
@@ -36,4 +37,4 @@ fd.out <- fracdiff(ts.test$ser, nar=length(ts.test$ar),
 # finite-difference interval
 fracdiff.var(ts.test$series, fd.out, h = .0001) 
 }
-
+\keyword{ts}

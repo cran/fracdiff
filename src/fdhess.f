@@ -487,7 +487,7 @@ c            H(i+1,j+1) = -dble(n)*((s + t) - two*fac*u)*fac
       implicit double precision (a-h,o-z)
 
 c     real               x(n)
-      real               x(*)
+      double precision   x(*)
 
 c     double precision   d, hh, hd(npq1), w(*)
       double precision   d, hh, hd(*), w(*)

@@ -509,7 +509,7 @@ c     real              x(n)
       intrinsic        log
 
       double precision  ddot
-      external          ajqp
+      external          ajp, ajq, ajqp
 
       double precision zero, one
       parameter       (zero=0.d0, one=1.d0)

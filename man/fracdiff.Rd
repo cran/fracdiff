@@ -1,4 +1,5 @@
 \name{fracdiff}
+\alias{fracdiff}
 \title{fracdiff: Maximum likelihood parameter estimates for}
           fractionally-differenced ARIMA (p,d,q) models
 
@@ -83,6 +84,4 @@ Applied Mathematics Division, Argonne National Laboratory (August 1980).
 ts.test <- fracdiff.sim( 5000, ar = .2, ma = -.4, d = .3)
 fracdiff( ts.test$series, nar = length(ts.test$ar), nma = length(ts.test$ma))
 }
-
-
-
+\keyword{ts}

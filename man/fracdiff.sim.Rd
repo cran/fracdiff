@@ -1,4 +1,5 @@
 \name{fracdiff.sim}
+\alias{fracdiff.sim}
 \title{fracdiff.sim: test problem generator for fracdiff}
 
 \usage{
@@ -42,3 +43,4 @@ fracdiff.sim( n, ar, ma, d, mu = 0.)
 fracdiff.sim( 10000, ar = .2, ma = .4, d = .3)
 }
 
+\keyword{ts}
