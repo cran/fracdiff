@@ -1,7 +1,7 @@
 ### Original file: 
 ### copyright 1991 Department of Statistics, Univeristy of Washington
 
-### Patched by Friedrich.Leisch <Friedrich.Leisch@ci.tuwien.ac.at>
+### Patched by Friedrich.Leisch
 ### for use with R, 22.1.1997
 
 
