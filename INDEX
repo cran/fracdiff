@@ -1,5 +1,5 @@
-fracdiff                 fracdiff: Maximum likelihood parameter estimates
-                         for
-fracdiff.sim             fracdiff.sim: test problem generator for
-                         fracdiff
-fracdiff.var             Recompute Covariance Estimate for fracdiff
+fracdiff                fracdiff: Maximum likelihood parameter
+                        estimates for
+fracdiff.sim            fracdiff.sim: test problem generator for
+                        fracdiff
+fracdiff.var            Recompute Covariance Estimate for fracdiff
