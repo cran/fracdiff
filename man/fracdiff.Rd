@@ -4,7 +4,9 @@
           fractionally-differenced ARIMA (p,d,q) models
 
 \usage{
-fracdiff( x, nar = 0, nma = 0, dtol = <see below>, M = 100)
+fracdiff(x, nar = 0, nma = 0, ar = rep(NA, max(nar, 1)),
+         ma = rep(NA, max(nma, 1)), dtol, drange = c(0, 0.5),
+         h, M = 100
 
 }
 \arguments{
@@ -14,11 +16,16 @@ fracdiff( x, nar = 0, nma = 0, dtol = <see below>, M = 100)
   number of autoregressive parameters}
 \item{nma}{
   number of moving average parameters}
+\item{ar}{initial autoregressive parameters}
+\item{ma}{initial moving average parameters}
 \item{dtol}{
   interval of uncertainty for d
   If dtol is less than zero,
   the fourth root of machine precision will be used.
   dtol will be altered if necessary by the program.}
+\item{drange}{interval over which the likelihood function is to be
+maximized as a function of d}
+\item{h}{finite difference interval}
 \item{M}{
   number of terms in the likelihood approximation (see Haslett and
   Raftery 1989)}
