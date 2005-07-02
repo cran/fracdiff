@@ -52,6 +52,9 @@ fracdiff <- function(x, nar = 0, nma = 0,
         dtol <- .Machine$double.eps^0.25 # ~ 1.22e-4
     ## if dtol < 0: the fortran code will choose defaults
     x <- as.double(x)
+
+    ## this also initializes "common blocks" that are used
+    ## in .Fortran(.) calls :
     result <- .Fortran("fracdf",
                        x,
                        n,
@@ -84,7 +87,7 @@ fracdiff <- function(x, nar = 0, nma = 0,
                warning("optimization limit reached"))
 
     hess <- .C("fdhpq",
-               x,
+               ## x,
                hess = double(npq1 * npq1),
                npq1,
                result$w,
@@ -181,32 +184,51 @@ fracdiff.var <- function(x, fracdiff.out, h)
     fracdiff.out$h <- temp$h
     fracdiff.out$covariance.dpq <-
         matrix(temp$cov, nrow = npq1, ncol = npq1, dimnames = list(nam, nam))
-    se.ok <- temp$info != 0 || temp$info < 3
-    fracdiff.out$stderror.dpq <- if(se.ok) temp$se # else NULL
+    se.ok <- temp$info != 0 || temp$info < 3 ## << FIXME -- illogical!!
+    fracdiff.out$stderror.dpq    <- if(se.ok) temp$se # else NULL
     fracdiff.out$correlation.dpq <- if(se.ok) array(temp$cor, c(npq1, npq1))
     fracdiff.out$hessian.dpq[1, ] <- temp$hd
     fracdiff.out$hessian.dpq[, 1] <- temp$hd
     fracdiff.out
 }
 
-fracdiff.sim <- function(n, ar, ma, d, mu = 0)
+## MM:  Added things for more  arima.sim() compatibility.
+##      really, 'mu' is nonsense since can be done separately (or via 'innov').
+fracdiff.sim <- function(n, ar = NULL, ma = NULL, d, rand.gen = rnorm,
+                         innov = rand.gen(n+q, ...), n.start = NA,
+                         allow.0.nstart = FALSE, # <- for back-compatibility
+                         ..., mu = 0)
 {
     p <- length(ar)
     q <- length(ma)
-    temp <- .C("fdsim",
-               as.integer(n),
-               (p),
-               (q),
-               as.double(ar),
-               as.double(ma),
-               as.double(d),
-               as.double(mu),
-               rnorm(n + q),
-               x = double(n + q),
-               .Machine$double.xmin,
-               .Machine$double.xmax,
-               .Machine$double.neg.eps,
-               .Machine$double.eps,
-               PACKAGE = "fracdiff")$x[1:n]
-    list(series = temp, ar = ar, ma = ma, d = d, mu = mu)
+    if(p) {
+        minroots <- min(Mod(polyroot(c(1, -ar))))
+        if(minroots <= 1) {
+            warning("'ar' part of fracdiff model is not stationary!!")
+            minroots <- 1.01 # -> n.start= 603 by default
+        }
+    }
+    if(is.na(n.start))
+        n.start <- p + q + ifelse(p > 0, ceiling(6/log(minroots)), 0)
+    if(n.start < p + q && !allow.0.nstart)
+        stop("burn-in 'n.start' must be as long as 'ar + ma'")
+    if(length(innov) < n+q) stop("'innov' must have length >= n + q")
+    y <- c(rand.gen(n.start, ...), innov[1:(n+q)])
+    stopifnot(is.double(y), length(y) == n + q + n.start)
+    y <- .C("fdsim",
+            as.integer(n + n.start),
+            (p),
+            (q),
+            as.double(ar),
+            as.double(ma),
+            as.double(d),
+            as.double(mu),
+            y = y,
+            s = double(length(y)),
+            .Machine$double.xmin,
+            .Machine$double.xmax,
+            .Machine$double.neg.eps,
+            .Machine$double.eps,
+            PACKAGE = "fracdiff")[["s"]][n.start + 1:n]
+    list(series = y, ar = ar, ma = ma, d = d, mu = mu, n.start = n.start)
 }

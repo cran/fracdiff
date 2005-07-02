@@ -1,3 +1,42 @@
+2005-07-02  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.2-1
+
+	* src/fdsim.c (fdsim): finally found "off by 1" indexing bug
+	  {introduced only in 1.1-2, two weeks ago} which accessed s[0]
+	  and hence sometimes gave huge garbage initially.
+
+	* tests/sim-ex.R: new: for fracdiff.sim() bug search
+		now also a speed test.
+
+
+2005-06-30  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/fracdiff.R (fracdiff.sim): add 'n.start', 'rand.gen', etc;
+	  similar as in arima.sim.
+	 NOTA BENE: changes the default fracdiff.sim() result as soon as
+	 ---------  p + q >= 1 !
+
+2005-06-29  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.2-0  {never released}
+
+	* src/fdcore.c: using FD_EXTERNAL and including all the
+	``common block'' declarations:
+
+	* src/mach_comm.h: all these are new, and included by
+	* src/maux_comm.h: the *.c files that need them.
+	* src/tols_comm.h:
+	* src/gamm_comm.h:
+	* src/hess_comm.h:
+
+	* README: added several general notes
+
+	* R/fracdiff.R (fracdiff): .C("fdhpq"): 'x' is not neeeded
+
+	* src/fdcore.c (fdcom): move  fdcom() {Common Block Initialization}
+	* src/fdhess.c (fdcom): from fdhess.c to fdcore.c
+
 2005-06-17  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* src/Makevars : drop the non-portable "-O3 -Wall" flags

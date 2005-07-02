@@ -34,24 +34,14 @@ static double dcsevl_(double *x, double *a, int *n);
 static int initds_(double *, int *, float *);
 
 
-/* Common Block Declarations */
-
-struct {
-    double fltmin, fltmax, epsmin, epsmax;
-} machfd_;
-
-#define machfd_1 machfd_
-
-struct {
-    int igamma, jgamma;
-} gammfd_;
-
-#define gammfd_1 gammfd_
+/* Common Block Declarations --- included as "extern" */
+#define FD_EXTERNAL extern
+#include "mach_comm.h"
+#include "gamm_comm.h"
 
 /* Table of constant values */
 
 static int c__42 = 42;
-static double c_b9 = 2.;
 static int c__15 = 15;
 
 double dgamma_(double *x)
@@ -136,19 +126,19 @@ double dgamma_(double *x)
 
     if (ngam == 0) {
 /*        ngam = initds (gamcs, 42, 0.1*sngl(  d1mach) ) */
-	r__1 = (float) machfd_1.epsmin * .1f;
+	r__1 = (float) machfd_.epsmin * .1f;
 	ngam = initds_(gamcs, &c__42, &r__1);
 
 	d9gaml_(&xmin, &xmax);
-	if (gammfd_1.igamma != 0) {
+	if (gammfd_.igamma != 0) {
 	    return ret_val;
 	}
 /*        xsml = dexp (dmax1 (dlog(d1mach(1)), -dlog(d1mach(2)))+0.01d0) */
 /* Computing MAX */
-	d__1 = log(machfd_1.fltmin), d__2 = -log(machfd_1.fltmax);
+	d__1 = log(machfd_.fltmin), d__2 = -log(machfd_.fltmax);
 	xsml = exp(max(d__1,d__2) + .01);
 /*        dxrel = dsqrt (d1mach(4)) */
-	dxrel = sqrt(machfd_1.epsmax);
+	dxrel = sqrt(machfd_.epsmax);
 
     }
 /*     y = fabs(x) */
@@ -169,7 +159,7 @@ double dgamma_(double *x)
 /*     dgamma = 0.9375d0 + dcsevl (2.d0*y-1.d0, gamcs, ngam) */
     d__1 = y * 2. - 1.;
     temp = dcsevl_(&d__1, gamcs, &ngam);
-    if (gammfd_1.igamma != 0) {
+    if (gammfd_.igamma != 0) {
 	return ret_val;
     }
     ret_val = temp + .9375;
@@ -195,24 +185,24 @@ double dgamma_(double *x)
 /*     2  54, 5, 2) */
     if (*x == 0.) {
 /*     write(6,*) 'dgamma : x is 0' */
-	gammfd_1.igamma = 11;
+	gammfd_.igamma = 11;
 	return ret_val;
     }
     if (*x < 0. && *x + (double) ((float) (n - 2)) == 0.) {
 /*     write( 6, *) 'dgamma : x is a negative integer' */
-	gammfd_1.igamma = 12;
+	gammfd_.igamma = 12;
 	return ret_val;
     }
     if (*x < -.5 && (d__1 = (*x - (double) ((int) (*x - .5))) / *x,
 	    abs(d__1)) < dxrel) {
-	gammfd_1.jgamma = 11;
+	gammfd_.jgamma = 11;
     }
 /*     1  write(6,*) 'dgamma : answer lt half precision because */
 /*     2                       x too near a negative integer' */
     if (y < xsml) {
 /*     write(6,*)  'dgamma :, */
 /*     1               x is so close to 0.0 that the result overflows' */
-	gammfd_1.igamma = 13;
+	gammfd_.igamma = 13;
 	return ret_val;
     }
 
@@ -238,20 +228,20 @@ L30:
 L50:
     if (*x > xmax) {
 /*     write(6,*) 'dgamma : x so big gamma overflows' */
-	gammfd_1.igamma = 14;
+	gammfd_.igamma = 14;
 	return ret_val;
     }
 
     ret_val = 0.;
     if (*x < xmin) {
 /*     write(6,*) 'dgamma : x so small gamma underflows' */
-	gammfd_1.jgamma = 12;
+	gammfd_.jgamma = 12;
 	return ret_val;
     }
 
 /*     dgamma = dexp ((y-0.5d0)*dlog(y) - y + sq2pil + d9lgmc(y) ) */
     temp = d9lgmc_(&y);
-    if (gammfd_1.igamma != 0) {
+    if (gammfd_.igamma != 0) {
 	return ret_val;
     }
     ret_val = exp((y - .5) * log(y) - y + sq2pil + temp);
@@ -264,14 +254,14 @@ L50:
 /*     2  , 61, 1, 1) */
     if ((d__1 = (*x - (double) ((int) (*x - .5))) / *x, abs(d__1)) <
 	    dxrel) {
-	gammfd_1.jgamma = 11;
+	gammfd_.jgamma = 11;
     }
 
 /*     sinpiy = dsin (pi*y) */
     sinpiy = sin(pi * y);
     if (sinpiy == 0.) {
 /*     write(6,*) 'dgamma : x is a negative integer' */
-	gammfd_1.igamma = 12;
+	gammfd_.igamma = 12;
 	return ret_val;
     }
 
@@ -301,15 +291,15 @@ double dgamr_(double *x)
     if (abs(*x) <= 10.) {
 /*     dgamr = 1.0d0/dgamma(x) */
 	temp = dgamma_(x);
-	if (gammfd_1.igamma != 0) {
-	    ret_val = machfd_1.fltmax;
+	if (gammfd_.igamma != 0) {
+	    ret_val = machfd_.fltmax;
 	    return ret_val;
 	}
 	ret_val = 1. / temp;
     } else {
 /*     x > 10. : */
 	dlgams_(x, &alngx, &sgngx);
-	if (gammfd_1.igamma != 0) {
+	if (gammfd_.igamma != 0) {
 	    return ret_val;
 	}
 	ret_val = sgngx * exp(-alngx);
@@ -320,20 +310,15 @@ double dgamr_(double *x)
 /* Subroutine */
 int dlgams_(double *x, double *dlgam, double *sgngam)
 {
-    /* System generated locals */
-    double d__1;
-
-    /* Local variables */
-    int intx;
-
 /* july 1977 edition.  w. fullerton, c3, los alamos scientific lab. */
 
 /* evaluate log abs (gamma(x)) and return the sign of gamma(x) in sgngam. */
 /* sgngam is either +1.0 or -1.0. */
 
+    int intx;
 
     *dlgam = dlngam_(x);
-    if (gammfd_1.igamma != 0) {
+    if (gammfd_.igamma != 0) {
 	return 0;
     }
     *sgngam = 1.;
@@ -341,8 +326,7 @@ int dlgams_(double *x, double *dlgam, double *sgngam)
 	return 0;
     }
 
-    d__1 = -((double) ((int) (*x)));
-    intx = (int) (fmod(d__1, c_b9) + .1);
+    intx = (int) (fmod(-((double) ((int) (*x))), 2.) + .1);
     if (intx == 0) {
 	*sgngam = -1.;
     }
@@ -379,7 +363,7 @@ int initds_(double *dos, int *nos, float *eta)
 
     /* Function Body */
     if (*nos < 1) {
-	gammfd_1.jgamma = 31;
+	gammfd_.jgamma = 31;
     }
 
     i__ = -1;
@@ -399,7 +383,7 @@ int initds_(double *dos, int *nos, float *eta)
 L20:
 /*     if (i.eq.nos) write(6,*) 'initds : eta may be too small' */
     if (i__ == *nos) {
-	gammfd_1.jgamma = 32;
+	gammfd_.jgamma = 32;
     }
     ret_val = i__;
 
@@ -433,7 +417,7 @@ static void d9gaml_(double *xmin, double *xmax)
 /*     external d1mach, dlog */
 
 /*     alnsml = dlog(d1mach(1)) */
-    alnsml = log(machfd_1.fltmin);
+    alnsml = log(machfd_.fltmin);
     *xmin = -alnsml;
     for (i__ = 1; i__ <= 10; ++i__) {
 	xold = *xmin;
@@ -449,14 +433,14 @@ static void d9gaml_(double *xmin, double *xmax)
     }
 /*     call seteru (27hd9gaml  unable to find xmin, 27, 1, 2) */
 /*     write(6,*) 'd9gaml : unable to find xmin' */
-    gammfd_1.igamma = 21;
+    gammfd_.igamma = 21;
     return;
 
 L20:
     *xmin = -(*xmin) + .01;
 
 /*     alnbig = dlog (d1mach(2)) */
-    alnbig = log(machfd_1.fltmax);
+    alnbig = log(machfd_.fltmax);
     *xmax = alnbig;
     for (i__ = 1; i__ <= 10; ++i__) {
 	xold = *xmax;
@@ -472,7 +456,7 @@ L20:
     }
 /*     call seteru (27hd9gaml  unable to find xmax, 27, 2, 2) */
 /*     write(6,*) 'd9gaml : unable to find xmax' */
-    gammfd_1.igamma = 22;
+    gammfd_.igamma = 22;
     return;
 
 L40:
@@ -535,13 +519,13 @@ double d9lgmc_(double *x)
 	goto L10;
     }
 /*     nalgm = initds (algmcs, 15, sngl(d1mach(3)) ) */
-    r__1 = (float) machfd_1.epsmin;
+    r__1 = (float) machfd_.epsmin;
     nalgm = initds_(algmcs, &c__15, &r__1);
 /*     xbig = 1.0d0/dsqrt(d1mach(3)) */
-    xbig = 1. / sqrt(machfd_1.epsmin);
+    xbig = 1. / sqrt(machfd_.epsmin);
 /*     xmax = dexp (dmin1(dlog(d1mach(2)/12.d0), -dlog(12.d0*d1mach(1)))) */
 /* Computing MIN */
-    d__1 = log(machfd_1.fltmax / 12.), d__2 = -log(machfd_1.fltmin * 12.);
+    d__1 = log(machfd_.fltmax / 12.), d__2 = -log(machfd_.fltmin * 12.);
     xmax = exp((min(d__1,d__2)));
 
 /* 10   if (x.lt.10.d0) call seteru (23hd9lgmc  x must be ge 10, 23, 1, 2) */
@@ -549,9 +533,9 @@ double d9lgmc_(double *x)
 L10:
     if (*x < 10.) {
 /*       write(6,*) 'd9lgmc : x must be ge 10' */
-	gammfd_1.igamma = 51;
+	gammfd_.igamma = 51;
 /*       d9lgmc = d1mach(2) */
-	ret_val = machfd_1.fltmax;
+	ret_val = machfd_.fltmax;
 	return ret_val;
     }
     if (*x >= xmax) {
@@ -566,9 +550,9 @@ L10:
 	d__2 = 10. / *x;
 	d__1 = d__2 * d__2 * 2. - 1.;
 	temp = dcsevl_(&d__1, algmcs, &nalgm);
-	if (gammfd_1.igamma != 0) {
+	if (gammfd_.igamma != 0) {
 /*         d9lgmc = d1mach(2) */
-	    ret_val = machfd_1.fltmax;
+	    ret_val = machfd_.fltmax;
 	} else {
 	    ret_val = temp / *x;
 	}
@@ -579,7 +563,7 @@ L20:
     ret_val = 0.;
 /*     call seteru (34hd9lgmc  x so big d9lgmc underflows, 34, 2, 0) */
 /*     write(6,*) 'd9lgmc : x so big d9lgmc underflows' */
-    gammfd_1.jgamma = 51;
+    gammfd_.jgamma = 51;
     return ret_val;
 
 } /* d9lgmc_ */
@@ -588,13 +572,10 @@ double dcsevl_(double *x, double *a, int *n)
 {
     /* System generated locals */
     int i__1;
-    double ret_val;
 
     /* Local variables */
-    static int i__;
-    static double b0, b1, b2;
-    static int ni;
-    static double twox;
+    int i__, ni;
+    double b0, b1, b2, twox;
 
 
 /* evaluate the n-term chebyshev series a at x.  adapted from */
@@ -621,25 +602,16 @@ double dcsevl_(double *x, double *a, int *n)
 /*    1  25hdcsevl  x outside (-1,+1), 25, 1, 1) */
 
     if (*n < 1) {
-/*       write(6,*) 'dcsevl : number of terms le 0' */
-	gammfd_1.igamma = 41;
-/*       dcsevl = d1mach(2) */
-	ret_val = machfd_1.fltmax;
-	return ret_val;
+	/* 'dcsevl : number of terms le 0' */
+	gammfd_.igamma = 41; return machfd_.fltmax;
     }
     if (*n > 1000) {
-/*       write(6,*) 'dcsevl : number of terms gt 1000' */
-	gammfd_1.igamma = 42;
-/*       dcsevl = d1mach(2) */
-	ret_val = machfd_1.fltmax;
-	return ret_val;
+	/* 'dcsevl : number of terms gt 1000' */
+	gammfd_.igamma = 42; return machfd_.fltmax;
     }
     if (*x < -1.1 || *x > 1.1) {
-/*       write(6,*) 'dcsevl : x outside (-1,+1)' */
-	gammfd_1.igamma = 43;
-/*       dcsevl = d1mach(2) */
-	ret_val = machfd_1.fltmax;
-	return ret_val;
+	/* 'dcsevl : x outside (-1,+1)' */
+	gammfd_.igamma = 43; return machfd_.fltmax;
     }
 
     twox = *x * 2.;
@@ -651,12 +623,10 @@ double dcsevl_(double *x, double *a, int *n)
 	b1 = b0;
 	ni = *n - i__ + 1;
 	b0 = twox * b1 - b2 + a[ni];
-/* L10: */
     }
 
-    ret_val = (b0 - b2) * .5;
+    return (b0 - b2) * .5;
 
-    return ret_val;
 } /* dcsevl_ */
 
 double dlngam_(double *x)
@@ -686,9 +656,9 @@ double dlngam_(double *x)
     ret_val = 0.;
     if (xmax == 0.) {
 /*     xmax = d1mach(2)/dlog(d1mach(2)) */
-	xmax = machfd_1.fltmax / log(machfd_1.fltmax);
+	xmax = machfd_.fltmax / log(machfd_.fltmax);
 /*     dxrel = dsqrt (d1mach(4)) */
-	dxrel = sqrt(machfd_1.fltmax);
+	dxrel = sqrt(machfd_.fltmax);
     }
     y = abs(*x);
     if (y <= 10.) {
@@ -696,8 +666,8 @@ double dlngam_(double *x)
 /*     |x| <= 10 :  Compute  dlngam := dlog (fabs (dgamma(x)) ) */
 
 	temp = dgamma_(x);
-	if (gammfd_1.igamma != 0) {
-	    ret_val = machfd_1.fltmax;
+	if (gammfd_.igamma != 0) {
+	    ret_val = machfd_.fltmax;
 	    return ret_val;
 	}
 	ret_val = log((abs(temp)));
@@ -707,15 +677,15 @@ double dlngam_(double *x)
 
     if (y > xmax) {
 /*     write(6,*) 'dlngam : abs(x) so big dlngam overflows' */
-	gammfd_1.igamma = 61;
-	ret_val = machfd_1.fltmax;
+	gammfd_.igamma = 61;
+	ret_val = machfd_.fltmax;
 	return ret_val;
     }
 
 /*     if (x.gt.0.d0) dlngam = sq2pil + (x-0.5d0)*dlog(x) - x + d9lgmc(y) */
     temp = d9lgmc_(&y);
-    if (gammfd_1.igamma != 0) {
-	ret_val = machfd_1.fltmax;
+    if (gammfd_.igamma != 0) {
+	ret_val = machfd_.fltmax;
 	return ret_val;
     }
     if (*x > 0.) {
@@ -728,15 +698,15 @@ double dlngam_(double *x)
     sinpiy = (d__1 = sin(pi * y), abs(d__1));
     if (sinpiy == 0.) {
 /*     write(6,*) 'dlngam : x is a negative integer' */
-	gammfd_1.igamma = 62;
-	ret_val = machfd_1.fltmax;
+	gammfd_.igamma = 62;
+	ret_val = machfd_.fltmax;
 	return ret_val;
     }
 
 /*     dlngam = sqpi2l + (x-0.5d0)*dlog(y) - x - dlog(sinpiy) - d9lgmc(y) */
     temp = d9lgmc_(&y);
-    if (gammfd_1.igamma != 0) {
-	ret_val = machfd_1.fltmax;
+    if (gammfd_.igamma != 0) {
+	ret_val = machfd_.fltmax;
 	return ret_val;
     }
     ret_val = sqpi2l + (*x - .5) * log(y) - *x - log(sinpiy) - temp;
@@ -746,7 +716,7 @@ double dlngam_(double *x)
 /*     2integer, 68, 1, 1) */
     if ((d__1 = (*x - (double) ((int) (*x - .5))) * ret_val / *x, abs(
 	    d__1)) < dxrel) {
-	gammfd_1.jgamma = 61;
+	gammfd_.jgamma = 61;
     }
     return ret_val;
 

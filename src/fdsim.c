@@ -1,7 +1,8 @@
-/* fdsim.f -- translated by f2c (version 20031025).
+/*-*- mode: C; kept-old-versions: 12;  kept-new-versions: 20; -*-
  *
- * and produced by
- * $Id: f2c-clean,v 1.10 2002/03/28 16:37:27 maechler Exp $
+ * fdsim.f -- translated by f2c (version 20031025).
+ *
+ * and produced by  f2c-clean,v 1.10 2002/03/28 16:37:27 maechler
  */
 #include <Rmath.h>
 
@@ -10,21 +11,19 @@
 extern double dgamr_(double *);
 extern double dgamma_(double *);
 
-/* Common Block Declarations --- used in  ./fdgam.c */
+/* Common Block Declarations --- included as "extern" */
+#define FD_EXTERNAL extern
 
-struct { double fltmin, fltmax, epsmin, epsmax;
-} machfd_;
-
-struct { int igamma, jgamma;
-} gammfd_;
+#include "mach_comm.h"
+#include "gamm_comm.h"
 
 
-/* Subroutine */
 void fdsim(int *n, int *ip, int *iq, double *ar, double *ma,
-	   double *d__, double *rmu, double *y, double *s,
+	   double *d__, double *mu, double *y, double *s,
 	   double *flmin, double *flmax, double *epmin, double *epmax)
 {
-/*  generates a random time series for use with fracdf
+/* Generates a random time series ``for use with fracdif'',
+ * i.e., filters a white noise series y[] into an ARIMA(p,d,q) series s[]
 
   Input :
 
@@ -34,7 +33,7 @@ void fdsim(int *n, int *ip, int *iq, double *ar, double *ma,
   ar	 float	  (ip) autoregressive parameters
   ma	 float	  (iq) moving average parameters
   d	 float	   fractional differencing parameter
-  rmu	 float	   time series mean
+  mu	 float	   time series mean
   y	 float	  (n+iq) 1st n : normalized random numbers
   s	 float	  (n+iq) workspace
 
@@ -47,7 +46,7 @@ void fdsim(int *n, int *ip, int *iq, double *ar, double *ma,
 	with fractional d (0 < d < 0.5).
 
  -----------------------------------------------------------------------------
-     float		 ar(ip), ma(iq), d, rmu
+     float		 ar(ip), ma(iq), d, mu
      float		 y(n+iq), s(n+iq)
  --------------------------------------------------------------------------
  */
@@ -83,9 +82,8 @@ void fdsim(int *n, int *ip, int *iq, double *ar, double *ma,
     d__1 = 1. - *d__ * 2.;
     vk = dgamma_(&d__1) * (temp * temp);
     if (gammfd_.igamma != 0) {
-	for (i = 1; i <= *n; ++i) {
+	for (i = 1; i <= *n; ++i)
 	    s[i] = 0.;
-	}
 	return;
     }
     /* else -- Gamma values ok, compute	 : */
@@ -94,7 +92,7 @@ void fdsim(int *n, int *ip, int *iq, double *ar, double *ma,
 
     y[1] *= sqrt(vk);
 
-/*	 Generate y(2) and initialise vk,phi(j) */
+    /*	 Generate y(2) and initialise vk,phi(j) */
 
     temp = *d__ / (1. - *d__);
     vk *= 1. - temp * temp;
@@ -102,7 +100,7 @@ void fdsim(int *n, int *ip, int *iq, double *ar, double *ma,
     s[1] = temp;
     y[2] = amk + y[2] * sqrt(vk);
 
-/*	 Generate y(3),...,y(n+iq) */
+    /*	 Generate y(3),...,y(n+iq) */
 
     for (k = 3; k <= (*n + *iq); ++k) {
 	dk1 = (double) k - 1.;
@@ -131,13 +129,13 @@ void fdsim(int *n, int *ip, int *iq, double *ar, double *ma,
 	y[k] = amk + y[k] * sqrt(vk);
     }
 
-/*	 We now have an ARIMA (0,d,0) realisation of length n+iq in
-	 y(k),k=1,n+iq. We now run this through an inverse ARMA(p,q)
-	 filter to get the final output in s(k), k=1,n. */
+/* We now have an ARIMA (0,d,0) realisation of length n+iq in
+ * y[k], k=1,..,n+iq. We now run this through an inverse ARMA(p,q)
+	 filter to get the final output in s[k], k=1,..,n. */
 
     for (k = 1; k <= *n; ++k) {
 	sum = 0.;
-	j = imin2(*ip,k);
+	j = imin2(*ip, k-1); /* i < j <= k-1 ==> (k - i - 1) >= 1 */
 	for (i = 0; i < j; ++i)
 	    sum += ar[i] * s[k - i - 1];
 	for (j = 0; j < *iq; ++j)
@@ -145,9 +143,9 @@ void fdsim(int *n, int *ip, int *iq, double *ar, double *ma,
 	s[k] = sum + y[k + *iq];
     }
     /* now add the global mean */
-    if (*rmu != 0.) {
+    if (*mu != 0.) {
 	for (i = 1; i <= *n; ++i)
-	    s[i] += *rmu;
+	    s[i] += *mu;
     }
     return;
 } /* fdsim */
