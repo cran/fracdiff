@@ -1,5 +1,6 @@
 library(fracdiff)
-library(fracdiff, lib="/u/maechler/R/Pkgs/fracdiff.Rcheck_1.1-1")
+if(FALSE) # manual testing
+library(fracdiff, lib="/u/maechler/R/Pkgs/fracdiff.Rcheck")
 
 .ptime <- proc.time()
 ## Test if the default  'n.start' is ok, i.e., if the

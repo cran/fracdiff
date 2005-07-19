@@ -1,16 +1,16 @@
-R Function	Fortran Subroutine(s) called		SRC file
-~~~~~~~~~~	~~~~~~~~~~~~~~~~~~~~~~~~~~~~            ~~~~~~~~
+R Function	C Functions(s) called			SRC file
+~~~~~~~~~~	~~~~~~~~~~~~~~~~~~~~~			~~~~~~~~
 
-fracdiff()	fracdf	(main routine)			src/fdcore.f
-		fdhpq	("hess")			src/fdhess.f
+fracdiff()	fracdf	(main routine)			src/fdcore.c
+		fdhpq	("hess")			src/fdhess.c
 		fdcov	("cov" and "cor" from hess etc)	   "
 
 fracdiff.var	fdcom	(init common blocks)		   "
 		fdcov	 <see above >			   "
 
-fracdiff.sim	fdsim					src/fdsim.f
+fracdiff.sim	fdsim					src/fdsim.c
 
 
 ---
 see also ./src/ftn-struc
----      ~~~~~~~~~~~~~~~
+---	 ~~~~~~~~~~~~~~~

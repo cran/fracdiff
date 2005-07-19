@@ -1,3 +1,19 @@
+2005-07-19  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.2-2
+
+	* R/fracdiff.R (fracdiff): use .C(), no longer .Fortran()
+	* src/fdcore.c (fracdf):   dito
+
+	* Calling: update
+
+	* tests/sim-ex.R: if(FALSE) library(*, lib="..MM..")
+
+2005-07-06  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* src/fdhess.c (hesspq_): move "inline" declarations to beginning
+	of loop: against warning "ISO C89 forbids mixed declarations and code"
+
 2005-07-02  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Version): 1.2-1
@@ -19,7 +35,7 @@
 
 2005-06-29  Martin Maechler  <maechler@stat.math.ethz.ch>
 
-	* DESCRIPTION (Version): 1.2-0  {never released}
+	* DESCRIPTION (Version): 1.2-0	{never released}
 
 	* src/fdcore.c: using FD_EXTERNAL and including all the
 	``common block'' declarations:
@@ -62,7 +78,7 @@
 2004-09-18  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* src/fdcore.c: now translated from fortran
-	* src/fdgam.c:  using f2c, my "f2c-clean"
+	* src/fdgam.c:	using f2c, my "f2c-clean"
 	* src/fdhess.c: and lots of manual cleaning.
 	* src/fdmin.c:
 	* src/fdsim.c:
@@ -88,7 +104,7 @@
 	    now list all components in \value{};  also 'dtol':
 	* R/fracdiff.R: dtol < 0 now does work as the docs have always said.
 
-	* src/Makevars (PKG_LIBS): new;  use BLAS_LIBS.
+	* src/Makevars (PKG_LIBS): new;	 use BLAS_LIBS.
 
 2003-12-29  Martin Maechler  <maechler@stat.math.ethz.ch>
 
@@ -98,12 +114,12 @@
 
 	* R/fracdiff.R (fracdiff): found *the* bug!! : use result$w !
 
-	* src/fdmin.f:  declared all; checked with "implicit none"
+	* src/fdmin.f:	declared all; checked with "implicit none"
 	* src/fdhess.f: <ditto>
 	* src/fdcore.f: <ditto>
 
 	* src/fdgam.f (d9lgmc): fixed typo: s/d9gmlc/d9lgmc/
-	                        checked all with "implicit none"
+				checked all with "implicit none"
 
 	* DESCRIPTION (Maintainer): Martin Maechler (was ORPHANED)
 	* DESCRIPTION (License): GPL
