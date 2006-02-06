@@ -1,8 +1,0 @@
-#!/bin/sh
-cp -p ../src-ftn/*.f .
-for f in *.f
-do f2c -A $f
-   bf=`basename $f .f`; echo "bf = $bf"; sleep 1
-   mv $bf.c $bf.c0; f2c-clean $bf.c0 > $bf.c
-done
-rm *.f
