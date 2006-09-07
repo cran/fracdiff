@@ -1,0 +1,179 @@
+# Program for testing -*- R -*-
+# (c) Fotis Papailias
+
+
+# Loading Libraries and Functions
+
+library(fracdiff)
+library(longmemo)
+
+# Robinson's Periodogram
+
+fROB <- function(x, d, el, alpha, tau)
+{
+   x <- as.numeric(na.fail(as.ts(x1)))
+    if (any(is.na(x))) stop("NAs in x")
+    if (NCOL(x) > 1) stop("only implemented for univariate time series")
+    n <- length(x)
+    g <- if (d >= 0 & d <= 0.25) {alpha*(n^((2*tau)/((2*tau)+1)))} else
+    	   if (d > 0.25 & d < 0.5) {alpha*(n^(tau/(tau+1-(2*d))))} else {0}
+    j <- el:g
+    kk <- 1:(n-1)
+    w <- 2*pi*j/n
+    mx <- mean(x)
+    var.x <- sum((x - mx)^2)/n # not /(n-1)
+    cov.x <- numeric(n-1)
+    for (k in kk)
+        cov.x[k] <- sum((x[1:(n-k)] - mx)*(x[(1+k):n] - mx)) / n
+
+    periodogram <- numeric(g-el)
+    z <- g-(el-1)
+    for (i in 1:z)
+        periodogram[i] <- var.x + 2*sum(cov.x * cos(w[i]*kk))
+    y.reg <- log(periodogram / (2*pi))
+    x.reg <- 2*log(2*sin(w/2))
+    fit <- lm(y.reg ~ x.reg)
+    dROB <- coef(fit)[2]
+    names(dROB) <- NULL
+    x.r2 <- sum((x.reg - mean(x.reg))^2)
+    var.d <- pi^2 / (6*x.r2)
+    var.reg <- sum(resid(fit)^2) / ((g - 1) * x.r2)
+    list(d = -dROB, sd.as = sqrt(var.d), sd.reg = sqrt(var.reg))
+}
+
+# Local Whittle
+
+lw <- function(h, x)
+{
+    peri1 <- per(x)
+    len <- length(x)
+    m <- len^0.5
+    peri <- peri1[2:(m+1)]
+    z <- c(1:m)
+    freq <- ((2*pi)/len) * z
+    result <- log(sum(freq^(2*h-1)*peri))-(2*h)/m * sum(log(freq))
+}
+
+
+# Whittle Likelihood No 1
+
+# You can call the function, in general, as "whittle1(x)" where "x" is the
+# underlying time series.
+#------------------------------------------------------------------------
+
+whittle1<-function(series)            	
+{     	
+ optim(par = 0.25, whittle.loglik, gr=NULL, method = "L-BFGS-B", series = series)$par
+}   
+  	
+#------------------------------------------------------------------------	
+# AUXILIARY FUNCTIONS 	
+#------------------------------------------------------------------------
+
+whittle.loglik<-function(x, series)   	
+{   	
+ series <- series - mean(series)   	
+ a <- fft(series)   	
+ a <- Mod(a)^2   	
+ n <- length(series)   	
+ a <- a/(2 * pi * n)   	
+ m <- n/2   	 	
+ w <- (2 * pi * (1:m))/n   	 	
+ b <- fn.density(w, x)   	  	
+ sigma2 <- (2 * sum(a[1:m]/b))/n   	  	
+ loglik <- 2 * pi * (sum(log(b)) + sum(a[1:m]/b)/sigma2)   	
+ return(loglik/n + pi * log(sigma2))   	
+}
+
+fn.density<-function(x, d) 	
+{ 	
+	a <- (2 * sin(x/2))^(-2 * d) 	
+	a <- a/(2 * pi) 	
+	return(a) 	
+} 
+
+
+# Whittle Likelihood No2
+
+logLik.Whittle<-function(d,xeval)
+{
+T <- length(xeval)
+Q <- spec.pgram(xeval,demean=T,plot=F,na.action=na.omit)
+P <- Q$spec
+f <- Q$freq
+M <- length(f)
+g <- 4*(sin(pi*f)^2)
+s2<- mean((g^d)*P)
+logLik <- M*log(s2) + d*sum(log(g)) + M
+return(logLik)
+} 
+
+whittle2 <- function(x)
+{
+# Estimate the long memory parameter of the demeaned series
+x1 <- x-mean(x)
+f <- optimize(logLik.Whittle,interval=c(-0.5,0.5),xeval=x1)
+}
+
+#	HERE STARTS THE MAIN CODE
+#
+#----------------------------------------------------------------------------
+#----------------------------------------------------------------------------
+#----------------------------------------------------------------------------
+
+dtrue <- 0.25 
+Htrue <- dtrue+0.5
+
+Nobs <- 100   # Number of observetions
+
+R <- 100   # Number of replications
+nestim <- 4   # number of estimators
+
+results <- matrix(0,nrow=R,ncol=nestim)
+
+for (i in seq(1,R,1))
+{
+print(i)
+	
+	# We simulate the Model.
+	out1 <- fracdiff.sim(n=Nobs, d=dtrue, rand.gen=rnorm)
+	x1 <- out1$series
+
+	# We calculate the estimators
+
+	rob <- fROB(x=x1, d=dtrue, el=1.5, alpha=3.9, tau=1) #upper bound of tau=1.2
+	lw1 <- optimize(lw, interval=c(0.5, 1), x=x1)
+	whittle_1 <- whittle1(series=x1) 
+	whittle_2 <- whittle2(x=x1)
+	
+	
+	results[i,] <- cbind(rob$d, lw1$minimum-0.5, whittle_1 , whittle_2$minimum)
+
+}
+
+
+bias <- results - dtrue
+
+dhat <- apply(results,2, mean)
+mean.bias <- apply(bias,2,mean)
+v.bias <- apply(bias,2,var)
+MSE <- (v.bias + (mean.bias^2))
+std.bias <- apply(bias,2,sd)
+median.bias <- apply(bias,2,median)
+min.bias <- apply(bias,2,min)
+max.bias <- apply(bias,2,max)
+
+
+total.number.of.statistics <- 8
+
+dtrue
+mdat <- matrix(c(dhat, mean.bias, v.bias, MSE, std.bias, median.bias, min.bias, max.bias), nrow = total.number.of.statistics, ncol=nestim, byrow=TRUE,
+		dimnames = list(c("d^", "Bias", "Var.", "MSE", "St.D.", "Median", "Min", "Max"), 
+		c("Rob", "L.Whittle", "Whittle 1", 	"Whittle 2" )))
+mdat
+
+min(abs(mean.bias))
+min(MSE)
+
+
+

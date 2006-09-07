@@ -1,6 +1,6 @@
 
-R version 2.4.0 alpha (2006-09-07 r39185)
-Copyright (C) 2006 The R Foundation for Statistical Computing
+R version 2.9.0 Patched (2009-06-07 r48733)
+Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -117,7 +117,7 @@ d    0.3374     0.0205    16.5   <2e-16 ***
 ar   0.7710     0.0414    18.6   <2e-16 ***
 ma  -0.3810     0.0160   -23.8   <2e-16 ***
 ---
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 [d.tol = 0.0001221, M = 100, h = 3.082e-05]
 Log likelihood: -2.92e+03 ==> AIC = 5850.5 [1 deg.freedom]
 > 
@@ -147,9 +147,10 @@ d   -24440 -3811  1742
 ar1  -3811 -2396  1507
 ma1   1742  1507 -5007
 
-> fd2u <- fracdiff.var(x2$series, fd2, h = fd2$h * 8)
+> fd2u <- fracdiff.var(x2$series, fd2, h = fd2$h * 8)#-> warning, unable .. corr...
 Warning message:
-unable to compute correlation matrix in: fracdiff.var(x2$series, fd2, h = fd2$h * 8) 
+In fracdiff.var(x2$series, fd2, h = fd2$h * 8) :
+  unable to compute correlation matrix
 > sapply(fd2u[fdCOVcomp], signif, digits = 4)
 $h
 [1] 0.0002466
@@ -178,5 +179,5 @@ ma1  1742  1507 -5007
 > 
 > ## Last Line:
 > cat('Time elapsed: ', proc.time() - .proctime00,'\n')
-Time elapsed:  0.669 0.007 0.696 0 0 
+Time elapsed:  0.233 0.014 0.26 0 0 
 > 

@@ -2,10 +2,18 @@ R Function	C Functions(s) called			SRC file
 ~~~~~~~~~~	~~~~~~~~~~~~~~~~~~~~~			~~~~~~~~
 
 fracdiff()	fracdf	(main routine)			src/fdcore.c
-		fdhpq	("hess")			src/fdhess.c
-		fdcov	("cov" and "cor" from hess etc)	   "
+		 \--> fdcom(), dopt()
 
-fracdiff.var	fdcom	(init common blocks)		   "
+		fdhpq	("hess")			src/fdhess.c
+		 \--> hesspq()
+
+		fdcov	("cov" and "cor" from hess etc)	   "
+		 \--> hesdpq(); dsvdc() & invsvd_()
+
+    {{TODO: how exactly are hesspq() and hessdpq() related ??? }}
+
+
+fracdiff.var	fdcom	(init common blocks)		src/fdhess.c
 		fdcov	 <see above >			   "
 
 fracdiff.sim	fdsim					src/fdsim.c
