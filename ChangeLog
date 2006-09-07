@@ -1,3 +1,33 @@
+2006-09-08  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* tests/ex.R: update; use summary()
+	* tests/ex.Rout.save:
+
+	* R/fd-methods.R (summary.fracdiff): logLik + AIC (also in print).
+
+2006-09-07  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/fd-methods.R (summary.fracdiff): also add summary(), print()
+		vcov() and logLik() methods for that.
+
+	* R/fracdiff.R (fracdiff.var):
+
+	* DESCRIPTION (Version): 1.3-1
+
+	* R/fracdiff.R (fracdiff): finally add *class* "fracdiff"
+
+	* src/Makevars: add missing FLIBS
+
+	* R/fd-methods.R (confint.fracdiff): new, based on
+		 Spencer Graves' code (R-help, 23 Jul 2006)
+
+	* R/fd-methods.R: (print.fracdiff), etc; new; just a stub
+	* man/fd-methods.Rd: new.
+
+2006-02-06  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.3-0 released to CRAN
+
 2005-12-27  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* R/diffseries.R (diffseries): new functions from Valderio Reisen
