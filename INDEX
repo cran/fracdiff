@@ -1,9 +1,0 @@
-fracdiff                ML Estimates for Fractionally-Differenced
-			ARIMA(p,d,q) models
-fracdiff.sim            Simulate fractional ARIMA Time Series
-coef.fracdiff           Many Methods for "fracdiff" objects
-confint.fracdiff        Confidence Intervals for Fracdiff Model Parameters
-fracdiff.var            Recompute Covariance Estimate for fracdiff
-diffseries              Fractionally Differentiate Data
-fdGPH                   Geweke and Porter-Hudak Estimator for ARFIMA(p,d,q)
-fdSperio                Sperio Estimate for 'd' in ARFIMA(p,d,q)

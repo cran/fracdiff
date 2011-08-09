@@ -1,17 +1,13 @@
 TODO / Ideas   see ---> ./Done  for things finished
 ------------            ~~~~~~
 
-1. Estimation should produce a class with print(), summary(), coef(),
-   logLik() and vcov() methods; maybe also residuals() & fitted(); predict()?
-   ==> Maybe use new function names to keep the old back compatibility
-
+1. Now have class, but not yet  residuals() & fitted(); predict()
  1a. In any case, we want $residuals (as "arima"): ``the fitted innovations''
 
- 1b. fracdiff.sim() could be improved;
-     think about making it an *generalization* of  arima.sim,
-     particularly the part allowing non-Gaussian things.
-     maybe call the new function
-     arfima.sim() and keep the old one as is.
+1c. fracdiff.sim(): think about making it an *generalization* of  arima.sim,
+     maybe call the new function arfima.sim() and keep the old one as is.
+
+
 
 2. call R's gammafn() and minimizers (Brent is there!), instead of "our own"
 
@@ -21,6 +17,22 @@ TODO / Ideas   see ---> ./Done  for things finished
        ~~~~~~~~~~~
 5. fracdiff() and fracdiff.var()  share much code, including warning
    message generation.  Clean up! See 'FIXME' in R/fracdiff.R !
+
+6. fracdiff.sim():  This really is a *filter* of the innovations.
+    in C: 1)  eps_t -->  fARIMA(0, d, 0) =: Y_t
+          2)   Y_t  -->  fARIMA(p, d, q) =: Z_t   i.e. a simple ARMA() filter
+   --> we should provide the "filter 1)" as a *separate* R function
+
+
+8. Long-standing "Bug" / Problem:
+
+  set.seed(1); (fdc <- fracdiff(X <- fracdiff.sim(n=100,d=0.25)$series))$covariance.dpq
+  #               d
+  #  d 1.901027e-12
+
+  This is *clearly* too small
+
+
 
 
 Hessian --> covariance
@@ -33,3 +45,7 @@ Hessian --> covariance
    just returns warnings if things "fail" there.
    Possibly rather do these in R, and possibly use
    using chol() and chol2inv() rather than svd.
+
+7. We should return  \hat{\sigma_\epsilon} or
+   \hat{\sigma^2_\epsilon}
+   ---> is the new "wnv" (= white noise variance) ???

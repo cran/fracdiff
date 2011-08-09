@@ -1,7 +1,8 @@
 
-R version 2.4.0 alpha (2006-09-07 r39185)
-Copyright (C) 2006 The R Foundation for Statistical Computing
+R version 2.13.1 Patched (2011-08-05 r56651)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: i686-pc-linux-gnu (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -63,7 +64,7 @@ $sd.reg
 [78] -1.287879 -0.267172 -0.392858
 > print(acf(r)) # shouldn't show structure - ideally
 
-Autocorrelations of series ‘r’, by lag
+Autocorrelations of series 'r', by lag
 
      0      1      2      3      4      5      6      7      8      9     10 
  1.000  0.239  0.045  0.198 -0.051 -0.039 -0.024 -0.055 -0.093 -0.115 -0.084 
@@ -71,5 +72,5 @@ Autocorrelations of series ‘r’, by lag
 -0.067 -0.197 -0.168  0.081 -0.068 -0.016  0.098 -0.061 -0.042 
 > 
 > cat("Time used: ", proc.time(),"\n") # for ``statistical reasons''
-Time used:  0.99 0.058 1.573 0 0 
+Time used:  0.688 0.088 0.832 0 0 
 > 
