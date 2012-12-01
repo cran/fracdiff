@@ -5,7 +5,7 @@
 \description{
   This function makes use Reisen (1994) estimator to estimate the memory
   parameter d in the ARFIMA(p,d,q) model.  It is based on the regression
-  equation using the smoothed peridogram function as an estimate of the
+  equation using the smoothed periodogram function as an estimate of the
   spectral density.
 }
 \usage{

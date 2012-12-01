@@ -6,7 +6,7 @@
   Estimate the fractional (or \dQuote{memory}) parameter \eqn{d} in the
   ARFIMA(p,d,q) model by the method of Geweke and Porter-Hudak (GPH).
   The GPH estimator is based on the regression equation using the
-  peridogram function as an estimate of the spectral density.
+  periodogram function as an estimate of the spectral density.
 }
 \usage{
 fdGPH(x, bandw.exp = 0.5)
