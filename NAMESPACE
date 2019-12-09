@@ -1,5 +1,17 @@
 useDynLib(fracdiff, .registration=TRUE)
 
+importFrom("stats",
+           AIC, arima, as.ts
+         , fft, nextn
+         , lm.fit
+         , coef, logLik, resid
+         , na.fail
+         , printCoefmat
+         , pnorm, qnorm, rnorm
+         , symnum
+         , tsp, "tsp<-"
+           )
+
 export("fracdiff", "fracdiff.sim", "fracdiff.var",
        "diffseries",
        "fdGPH", "fdSperio")
