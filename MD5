@@ -1,5 +1,5 @@
-b8199e0fdefe6bfebe48866a755c44ce *ChangeLog
-f9a4c657fb504c323b69a76878841fce *DESCRIPTION
+8e318d365ff6dc92299d1f9313b30b47 *ChangeLog
+edf5de54d8ac2ffb842cbbde55938f94 *DESCRIPTION
 3697b0d3de7479c51c93d61fe20f68b3 *NAMESPACE
 f4f0fc84ffeebfaf33a2dea0dfe23290 *R/diffseries.R
 1f8574cf20a4f34ef2018faee0c009fe *R/fd-methods.R
@@ -8,7 +8,7 @@ f4f0fc84ffeebfaf33a2dea0dfe23290 *R/diffseries.R
 7c03205f5af65e87838245890fbef68f *R/fracdiff.R
 cc4b16ee40609adbf6d5eea91aa31668 *README
 05c4ec7d8644cbd6c467db3108ec2f0c *TODO
-c0b30945738ab1af253a123c74d6b645 *build/partial.rdb
+02108806605e043ba247bfa655adba9d *build/partial.rdb
 8519303ab6180ae5b72bfb7e08b466b1 *man/confint.fracdiff.Rd
 8113e7c8baf0419d7962ca1327b46bee *man/diffseries.Rd
 ff5a7e6439ede40296b4a5f261dde29e *man/fd-methods.Rd
@@ -30,13 +30,11 @@ cb2e7a29fe608840e216ca854d7343aa *src/fracdiff.h
 51000f9ec70c6503b84239c646ac4241 *src/mach_comm.h
 3ef6556fc2a65de62819a3c1d9eb01b6 *src/maux_comm.h
 52bd746de8e016767e4cd0ee28dd0e56 *src/pmult.c
-77faf082f0ffe897f6823764d18254ad *tests/Valderio-ex.R
-ae209c155d1462b10dd1bf5b7cc45a4f *tests/Valderio-ex.Rout.save
+2a1147e176a7336890c1818c9fc44a14 *tests/Valderio-ex.R
+35da85906e36c1848b1e41415c092d7e *tests/Valderio-ex.Rout.save
 e354d21300653d00a2f80ecc1f107d1c *tests/ex-Vinod.R
-96586f527c9bd1a4c2db8b2ef3700cd1 *tests/ex.R
-c6b3783628520a36a27d28472ddbfb84 *tests/ex.Rout-32b
-05937065258d0066f3711456269d7feb *tests/ex.Rout-64b
-05937065258d0066f3711456269d7feb *tests/ex.Rout.save
+2acd1e65a525b3f793fefa8f5667fe4a *tests/ex.R
+5a58202c48a34f0ede0e7992c5a977a8 *tests/ex.Rout.save
 e1dada860c4125548720aa2a9411985b *tests/sim-2.R
 175f12755ef2a091e477a89551cf7403 *tests/sim-ex.R
 36ef50f16b9f1f3faed8b9c3f82a73af *tests/sim-ex.Rout.save
