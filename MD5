@@ -1,5 +1,5 @@
-57c2c8f379b93f65417fa49801f9c6f6 *ChangeLog
-dcf87236690a40ba4ca244011f1a6a22 *DESCRIPTION
+2a62b3146b00498f5f943c31c7fc0013 *ChangeLog
+fb30fa10b0cacb760fd5525718c3fd7b *DESCRIPTION
 3697b0d3de7479c51c93d61fe20f68b3 *NAMESPACE
 f4f0fc84ffeebfaf33a2dea0dfe23290 *R/diffseries.R
 1f8574cf20a4f34ef2018faee0c009fe *R/fd-methods.R
@@ -8,7 +8,7 @@ f4f0fc84ffeebfaf33a2dea0dfe23290 *R/diffseries.R
 7c03205f5af65e87838245890fbef68f *R/fracdiff.R
 cc4b16ee40609adbf6d5eea91aa31668 *README
 05c4ec7d8644cbd6c467db3108ec2f0c *TODO
-ea124a494ad7922985532ad3b308e4d5 *build/partial.rdb
+8faf250d78a120ba4c7ea2186efddd24 *build/partial.rdb
 8519303ab6180ae5b72bfb7e08b466b1 *man/confint.fracdiff.Rd
 8113e7c8baf0419d7962ca1327b46bee *man/diffseries.Rd
 ff5a7e6439ede40296b4a5f261dde29e *man/fd-methods.Rd
